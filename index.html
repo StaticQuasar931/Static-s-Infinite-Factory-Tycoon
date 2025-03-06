@@ -55,8 +55,7 @@
       color: #bbb;
     }
     .upgrade-container,
-    .employee-container,
-    .prestige-container {
+    .employee-container {
       margin-top: 20px;
       padding: 15px;
       background: rgba(255, 255, 255, 0.1);
@@ -133,9 +132,9 @@
   <div class="notification" id="notificationBox"></div>
 
   <div class="container">
-    <!-- Money and Prestige on same line -->
+    <!-- Money and Prestige Points on the same line -->
     <p class="money-line">
-      💰 Money: $<span id="money">0.00</span> 
+      💰 Money: $<span id="money">0.00</span>
       | 🌟 Prestige Points: <span id="prestigePoints">0</span>
     </p>
 
@@ -144,8 +143,7 @@
     <h2>🏭 Factory Production</h2>
     <p>🏭 Factory: <span id="factoryName"></span></p>
     <p>
-      📦 Product: 
-      <span id="productName"></span> 
+      📦 Product: <span id="productName"></span> 
       (Base: <span id="productBase">0</span>, 
       Batch: <span id="productBatch">1</span>)
     </p>
@@ -173,15 +171,15 @@
     <!-- Credits -->
     <p style="margin-top: 30px;">
       Made By 
-      <a href="https://your-website-url-here.com" target="_blank" style="color: #00d1ff;">Static</a>
+      <a href="https://sites.google.com/view/staticquasar931/home?authuser=0" target="_blank" style="color: #00d1ff;">Static</a>
     </p>
   </div>
 
   <!-- QR Code (bottom-left) -->
   <div class="qr-container">
-    <a href="https://your-website-url-here.com" target="_blank">
+    <a href="https://sites.google.com/view/staticquasar931/home?authuser=0" target="_blank">
       <img 
-        src="https://res-console.cloudinary.com/dcsrqennd/thumbnails/v1/image/upload/v1733694622/ZnJhbWVfMV92bXY5eTM=/drilldown" 
+        src="https://res.cloudinary.com/dcsrqennd/image/upload/v1733694622/frame_1_vmv9y3.png" 
         alt="Qr Code linking to Static's site" 
         title="Click to visit Static's site"
       />
@@ -412,7 +410,7 @@
     }
 
     /* =======================
-       UI Update
+       UI & Notification
     ========================== */
     function updateUI() {
       document.getElementById("money").innerText = formatNumber(money);
@@ -436,14 +434,10 @@
       updateBackground();
     }
 
-    /* =======================
-       Notification (VIP, etc.)
-    ========================== */
     function showNotification(message) {
       const box = document.getElementById("notificationBox");
       box.innerText = message;
       box.style.display = "block";
-      // Hide after 3 seconds
       setTimeout(() => {
         box.style.display = "none";
       }, 3000);
@@ -491,7 +485,9 @@
         money -= upg.cost;
 
         if (upg.name === "⚙️ Speedy Assembly") {
-          cooldownTime = Math.max(Math.round(cooldownTime * upg.effect), 100);
+          cooldownTime = Math.round(cooldownTime * upg.effect);
+          // Clamp cooldown
+          cooldownTime = Math.max(cooldownTime, 100);
         } 
         else if (upg.name === "Product Upgrade") {
           if (currentProductIndex < factories[factoryIndex].products.length - 1) {
@@ -502,7 +498,9 @@
           return;
         } 
         else if (upg.name === "🏭 Factory Expansion") {
-          cooldownTime = Math.max(Math.round(cooldownTime * upg.effect), 100);
+          cooldownTime = Math.round(cooldownTime * upg.effect);
+          // Clamp cooldown
+          cooldownTime = Math.max(cooldownTime, 100);
         } 
         else if (upg.effect === "increaseBatch") {
           productBatch++;
@@ -570,7 +568,7 @@
       }
     }
 
-    /* Passive Income */
+    // Passive Income
     setInterval(() => {
       const totalProduction = employees.reduce((sum, emp) => sum + (emp.rate * emp.quantity), 0);
       if (totalProduction > 0) {
@@ -612,7 +610,6 @@
       }
     });
 
-    /* Simple Challenge: +10% multiplier after 100 products */
     function checkChallenge() {
       if (!challengeBonusApplied && totalProductsProduced >= 100) {
         multiplier *= 1.1;
@@ -667,11 +664,14 @@
       const pupg = prestigeUpgrades[index];
       if (prestigePoints >= pupg.cost) {
         prestigePoints -= pupg.cost;
+
         if (pupg.name.includes("Divine Efficiency")) {
           multiplier *= pupg.effect;
         } 
         else if (pupg.name.includes("Temporal Mastery")) {
           cooldownTime = Math.round(cooldownTime * pupg.effect);
+          // Clamp to 100ms min
+          cooldownTime = Math.max(cooldownTime, 100);
         } 
         else if (pupg.name.includes("Cosmic Workforce")) {
           employees.forEach(emp => {
@@ -682,7 +682,6 @@
           multiplier *= pupg.effect;
         } 
         else if (pupg.name.includes("Eternal Workshop")) {
-          // Increase base product value for all factories
           factories.forEach(f => {
             f.products.forEach(p => {
               p.base = Math.round(p.base * pupg.effect);
@@ -699,8 +698,11 @@
         } 
         else if (pupg.name.includes("VIP Client Order")) {
           vipChance += 0.02;
+          // Clamp VIP chance to 1.0 (100%)
+          vipChance = Math.min(vipChance, 1.0);
           vipMultiplier *= 1.05;
         }
+
         pupg.cost = Math.round(pupg.cost * 1.5);
         updateUI();
       }
@@ -789,7 +791,7 @@
     }
 
     /* =======================
-       Init
+       Initialize
     ========================== */
     window.onload = () => {
       updateUI();
