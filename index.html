@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Static's Infinite Factory Tycoon</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: Arial, sans-serif;
+      transition: background 0.5s ease;
+      margin: 0;
+      padding: 20px;
+      color: #fff;
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+    .button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    .button:hover {
+      background-color: #0056b3;
+    }
+    /* For the Product Upgrade button, keep the text normal but use a golden background */
+    .gold-button {
+      background-color: gold;
+      color: black;
+      font-weight: normal;
+    }
+    .money {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .cooldown {
+      font-size: 14px;
+      color: #bbb;
+    }
+    .upgrade-container,
+    .employee-container,
+    .prestige-container,
+    .prestige-upgrade-container {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+    .upgrade,
+    .employee,
+    .prestige-upgrade {
+      flex: 1 1 45%;
+      margin: 5px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .upgrade:hover,
+    .employee:hover,
+    .prestige-upgrade:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
+    .prestige-menu {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      z-index: 1000;
+      max-width: 80%;
+      font-size: 14px;
+    }
+    .prestige-menu h2 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧸 Static's Infinite Factory Tycoon</h1>
+    <p class="money">💰 Money: $<span id="money">0.00</span></p>
+    <p>🌟 Prestige Points: <span id="prestigePoints">0</span></p>
+    <p>🔄 Multiplier: x<span id="multiplier">1.00</span> | Prestige Multi: x<span id="prestigeMulti">1.00</span></p>
+
+    <h2>🏭 Factory Production</h2>
+    <p>🏭 Factory: <span id="factoryName"></span></p>
+    <p>📦 Product: <span id="productName"></span> (Base: <span id="productBase">0</span>, Batch: <span id="productBatch">1</span>)</p>
+    <button class="button" id="produce">🚀 Produce Product</button>
+    <p class="cooldown" id="cooldown">⏳ Cooldown: Ready</p>
+
+    <div class="upgrade-container" id="upgradeContainer">
+      <h2 style="width:100%;">📈 Upgrades</h2>
+      <div id="upgrades"></div>
+    </div>
+
+    <div class="employee-container" id="employeeContainer">
+      <h2 style="width:100%;">👥 Employees</h2>
+      <div id="employees"></div>
+    </div>
+
+    <div class="prestige-container">
+      <h2>🔄 Prestige</h2>
+      <button class="button" id="prestige">🌟 Prestige</button>
+    </div>
+
+    <div class="prestige-upgrade-container">
+      <h2>✨ Prestige Upgrades</h2>
+      <div id="prestigeUpgrades"></div>
+    </div>
+  </div>
+
+  <!-- Prestige Menu -->
+  <div class="prestige-menu" id="prestigeMenu">
+    <h2>🔄 Prestige Confirmation</h2>
+    <p>
+      <strong>Warning:</strong> Prestiging will reset your current money, multiplier, upgrades,
+      employee progress, product batch size, and production count. Your Total Earned Money remains for calculating
+      Prestige Points (1 PP per $1K earned).
+    </p>
+    <p>Requirement: You must have at least $1K on hand to gain additional PP.</p>
+    <p>Your Current Prestige Points: <span id="livePP">0</span></p>
+    <p>Potential Prestige Points Gain: <span id="earnedPP">0</span></p>
+    <p>🏭 Current Factory: <span id="currentFactory"></span></p>
+    <p>🏭 Next Factory: <span id="nextFactory"></span></p>
+    <p>📦 Base Product Value: <span id="baseValue"></span></p>
+    <p>📦 Best Product Value: <span id="bestValue"></span></p>
+    <div id="prestigeUpgradesMenu"></div>
+    <button class="button" id="confirmPrestige">✔ Confirm</button>
+    <button class="button" id="closePrestige">❌ Cancel</button>
+  </div>
+
+  <script>
+    "use strict";
+
+    /* =======================
+       Utility: Number Formatting
+       Formats large numbers to use abbreviations (e.g., 10K, 100.5 Million)
+    ========================== */
+    function formatNumber(num) {
+      if (num >= 1e9) {
+        return (num / 1e9).toFixed(1) + " Billion";
+      } else if (num >= 1e6) {
+        return (num / 1e6).toFixed(1) + " Million";
+      } else if (num >= 1e3) {
+        return (num / 1e3).toFixed(1) + "K";
+      } else {
+        return num.toFixed(2);
+      }
+    }
+
+    /* =======================
+       Game State Initialization
+    ========================== */
+    let money = parseFloat(localStorage.getItem("money")) || 0;
+    let totalEarned = parseFloat(localStorage.getItem("totalEarned")) || 0;
+    let prestigePoints = parseInt(localStorage.getItem("prestigePoints")) || 0;
+    let multiplier = parseFloat(localStorage.getItem("multiplier")) || 1;
+    let prestigeMulti = parseFloat(localStorage.getItem("prestigeMulti")) || 1;
+    let totalProductsProduced = parseInt(localStorage.getItem("totalProductsProduced")) || 0;
+    let challengeBonusApplied = localStorage.getItem("challengeBonusApplied") === "true";
+    let productBatch = parseInt(localStorage.getItem("productBatch")) || 1;
+
+    let factoryIndex = parseInt(localStorage.getItem("factoryIndex")) || 0;
+    let currentProductIndex = parseInt(localStorage.getItem("currentProductIndex")) || 0;
+    let producing = false;
+    const baseCooldownTime = 5000; // in milliseconds
+    let cooldownTime = parseInt(localStorage.getItem("cooldownTime")) || baseCooldownTime;
+
+    // VIP Variables
+    let vipChance = parseFloat(localStorage.getItem("vipChance")) || 0.05; // 5% chance
+    let vipMultiplier = parseFloat(localStorage.getItem("vipMultiplier")) || 20; // 20x bonus
+
+    /* =======================
+       Factories & Products Data
+    ========================== */
+    const factories = [
+      {
+        name: "🧸 Children's Toys Factory",
+        bg: "linear-gradient(to right, #ff9a9e, #fad0c4)",
+        products: [
+          { name: "Wooden Blocks", base: 10 },
+          { name: "Toy Cars", base: 15 },
+          { name: "Stuffed Animals", base: 20 },
+          { name: "Puzzle Games", base: 25 },
+          { name: "Action Figures", base: 30 },
+          { name: "Dollhouses", base: 35 },
+          { name: "Remote Control Cars", base: 40 },
+          { name: "Educational Kits", base: 45 },
+          { name: "Model Trains", base: 50 },
+          { name: "Custom Playsets", base: 60 }
+        ]
+      },
+      {
+        name: "🍰 Sweet Treats Bakery",
+        bg: "linear-gradient(to right, #fbc2eb, #a6c1ee)",
+        products: [
+          { name: "Cupcakes", base: 12 },
+          { name: "Cookies", base: 18 },
+          { name: "Brownies", base: 24 },
+          { name: "Donuts", base: 30 },
+          { name: "Muffins", base: 36 },
+          { name: "Pastries", base: 42 },
+          { name: "Cakes", base: 50 },
+          { name: "Macarons", base: 58 },
+          { name: "Eclairs", base: 66 },
+          { name: "Gourmet Pies", base: 75 }
+        ]
+      },
+      {
+        name: "🎨 Artisan Crafts Workshop",
+        bg: "linear-gradient(to right, #a1c4fd, #c2e9fb)",
+        products: [
+          { name: "Handmade Cards", base: 14 },
+          { name: "Ceramic Mugs", base: 20 },
+          { name: "Knitted Scarves", base: 26 },
+          { name: "Wooden Toys", base: 32 },
+          { name: "Painted Vases", base: 38 },
+          { name: "Handcrafted Jewelry", base: 44 },
+          { name: "Embroidered Pillows", base: 50 },
+          { name: "Custom Furniture", base: 58 },
+          { name: "Vintage Clocks", base: 66 },
+          { name: "Bespoke Art Pieces", base: 75 }
+        ]
+      },
+      {
+        name: "📱 Tech Gadget Studio",
+        bg: "linear-gradient(to right, #a18cd1, #fbc2eb)",
+        products: [
+          { name: "Smartphone Cases", base: 16 },
+          { name: "Wireless Earbuds", base: 22 },
+          { name: "Portable Chargers", base: 28 },
+          { name: "Bluetooth Speakers", base: 34 },
+          { name: "Smartwatches", base: 40 },
+          { name: "Tablet Accessories", base: 46 },
+          { name: "VR Headsets", base: 52 },
+          { name: "Drone Kits", base: 60 },
+          { name: "Gaming Controllers", base: 68 },
+          { name: "Advanced Gadgets", base: 78 }
+        ]
+      },
+      {
+        name: "💎 Luxury Gift Atelier",
+        bg: "linear-gradient(to right, #ffecd2, #fcb69f)",
+        products: [
+          { name: "Artisanal Chocolates", base: 18 },
+          { name: "Designer Scarves", base: 26 },
+          { name: "Luxury Candles", base: 34 },
+          { name: "Fine Wines", base: 42 },
+          { name: "Handcrafted Jewelry", base: 50 },
+          { name: "Exclusive Perfumes", base: 58 },
+          { name: "Gourmet Baskets", base: 66 },
+          { name: "Limited Edition Watches", base: 74 },
+          { name: "Premium Leather Goods", base: 82 },
+          { name: "Custom Masterpieces", base: 90 }
+        ]
+      }
+    ];
+
+    /* =======================
+       Upgrades & Employees Data
+    ========================== */
+    // Normal Upgrades (cheaper costs and balanced scaling)
+    // Note: "🏭 Factory Expansion" now reduces cooldown time instead of increasing money per production.
+    let upgrades = JSON.parse(localStorage.getItem("upgrades")) || [
+      { name: "Quality Increase", cost: 25, effect: 1.5, description: "Increase production multiplier by 50%." },
+      { name: "⚙️ Speedy Assembly", cost: 50, effect: 0.9, description: "Reduce production cooldown by 10%." },
+      { name: "Product Upgrade", cost: 250, effect: "upgradeProduct", description: "Upgrade product to next tier. Next: " },
+      { name: "🏭 Factory Expansion", cost: 200, effect: 0.95, description: "Reduce production cooldown by 5%." },
+      { name: "📦 Batch Production", cost: 400, effect: "increaseBatch", description: "Increase products produced per click. Next batch size: " }
+    ];
+
+    // Employees Data (cheaper costs, cost scaling by 1.5)
+    let employees = JSON.parse(localStorage.getItem("employees")) || [
+      { name: "👷 Efficient Operator", cost: 75, rate: 1, quantity: 0, description: "Generates $1/sec per operator." },
+      { name: "👨‍🔧 Skilled Worker", cost: 250, rate: 5, quantity: 0, description: "Generates $5/sec per worker." },
+      { name: "🛠️ Master Craftsman", cost: 1000, rate: 20, quantity: 0, description: "Generates $20/sec per craftsman." },
+      { name: "🏆 Production Supervisor", cost: 4000, rate: 50, quantity: 0, description: "Generates $50/sec per supervisor." },
+      { name: "💼 Operations Manager", cost: 7500, rate: 100, quantity: 0, description: "Generates $100/sec per manager." }
+    ];
+
+    // Employee Training Upgrade (one-time purchase)
+    let employeeTraining = JSON.parse(localStorage.getItem("employeeTraining")) ||
+      { unlocked: false, cost: 150, effect: 1.2, purchased: false, description: "Increase all employee production by 20%." };
+
+    // Prestige Upgrades (remain unchanged)
+    let prestigeUpgrades = JSON.parse(localStorage.getItem("prestigeUpgrades")) || [
+      { name: "Divine Efficiency ✨", cost: 5, effect: 1.1, description: "Permanently increase multiplier by 10%." },
+      { name: "Temporal Mastery ⏳", cost: 10, effect: 0.95, description: "Permanently reduce cooldown by 5%." },
+      { name: "Cosmic Workforce 🚀", cost: 15, effect: 1.2, description: "Permanently boost employee production by 20%." },
+      { name: "Galactic Expansion 🚀", cost: 20, effect: 1.15, description: "Permanently boost multiplier by 15%." },
+      { name: "Eternal Workshop 🏭", cost: 25, effect: 1.25, description: "Permanently increase product base value by 25%." },
+      { name: "Prestige Pure Multi", cost: 1, effect: 1.1, description: "Increase your Prestige Multi by 10%." },
+      { name: "Prestige Auto-Operator", cost: 8, effect: 1.2, description: "Boost automatic production by 20%." },
+      { name: "VIP Client Order", cost: 30, effect: 1, description: "Increase VIP order chance by 2% and VIP order multiplier by 5% per purchase." }
+    ];
+
+    /* =======================
+       Utility Functions
+    ========================== */
+    // Save current game state in localStorage
+    function saveGame() {
+      localStorage.setItem("money", money);
+      localStorage.setItem("totalEarned", totalEarned);
+      localStorage.setItem("prestigePoints", prestigePoints);
+      localStorage.setItem("multiplier", multiplier);
+      localStorage.setItem("prestigeMulti", prestigeMulti);
+      localStorage.setItem("cooldownTime", cooldownTime);
+      localStorage.setItem("upgrades", JSON.stringify(upgrades));
+      localStorage.setItem("employees", JSON.stringify(employees));
+      localStorage.setItem("employeeTraining", JSON.stringify(employeeTraining));
+      localStorage.setItem("prestigeUpgrades", JSON.stringify(prestigeUpgrades));
+      localStorage.setItem("factoryIndex", factoryIndex);
+      localStorage.setItem("currentProductIndex", currentProductIndex);
+      localStorage.setItem("totalProductsProduced", totalProductsProduced);
+      localStorage.setItem("challengeBonusApplied", challengeBonusApplied);
+      localStorage.setItem("productBatch", productBatch);
+      localStorage.setItem("vipChance", vipChance);
+      localStorage.setItem("vipMultiplier", vipMultiplier);
+    }
+
+    // Update the page background based on current factory theme
+    function updateBackground() {
+      document.body.style.background = factories[factoryIndex].bg;
+    }
+
+    // Main UI update function: refresh displayed values and save game state
+    function updateUI() {
+      document.getElementById("money").innerText = formatNumber(money);
+      document.getElementById("prestigePoints").innerText = prestigePoints;
+      document.getElementById("multiplier").innerText = multiplier.toFixed(2);
+      document.getElementById("prestigeMulti").innerText = prestigeMulti.toFixed(2);
+
+      document.getElementById("factoryName").innerText = factories[factoryIndex].name;
+      const currentProduct = factories[factoryIndex].products[currentProductIndex];
+      document.getElementById("productName").innerText = currentProduct.name;
+      document.getElementById("productBase").innerText = currentProduct.base;
+      document.getElementById("productBatch").innerText = productBatch;
+
+      renderUpgrades();
+      renderEmployees();
+      renderPrestigeUpgrades();
+      renderEmployeeTraining();
+      updatePrestigeMenu();
+      saveGame();
+      updateBackground();
+    }
+
+    /* =======================
+       Upgrade System Functions
+    ========================== */
+    // Render normal upgrades in the upgrades container
+    function renderUpgrades() {
+      const upgradeContainer = document.getElementById("upgrades");
+      upgradeContainer.innerHTML = "";
+      upgrades.forEach((upg, index) => {
+        const btn = document.createElement("button");
+        btn.className = "button upgrade";
+        // Special handling for Product Upgrade (golden background) and others
+        if (upg.name === "Product Upgrade") {
+          const nextProduct = factories[factoryIndex].products[currentProductIndex + 1];
+          if (nextProduct) {
+            btn.innerText = `${upg.name} ($${formatNumber(upg.cost)})`;
+            btn.title = `${upg.description} Next: ${nextProduct.name} (Base: ${nextProduct.base})`;
+            btn.classList.add("gold-button");
+          } else {
+            btn.innerText = `${upg.name} (Max Level)`;
+            btn.disabled = true;
+          }
+        } else if (upg.name === "🏭 Factory Expansion") {
+          btn.innerText = `${upg.name} ($${formatNumber(upg.cost)})`;
+          btn.title = upg.description;
+        } else if (upg.effect === "increaseBatch") {
+          btn.innerText = `${upg.name} ($${formatNumber(upg.cost)})`;
+          btn.title = `${upg.description} Next batch size: ${productBatch + 1}`;
+        } else {
+          btn.innerText = `${upg.name} ($${formatNumber(upg.cost)})`;
+          btn.title = upg.description;
+        }
+        btn.onclick = () => purchaseUpgrade(index);
+        upgradeContainer.appendChild(btn);
+      });
+    }
+
+    // Purchase a normal upgrade
+    function purchaseUpgrade(index) {
+      const upg = upgrades[index];
+      if (money >= upg.cost) {
+        money -= upg.cost;
+        // Apply upgrade effect based on upgrade type
+        if (upg.name === "⚙️ Speedy Assembly") {
+          cooldownTime = Math.round(cooldownTime * upg.effect);
+        } else if (upg.name === "Product Upgrade") {
+          if (currentProductIndex < factories[factoryIndex].products.length - 1) {
+            currentProductIndex++;
+          }
+          // Increase Product Upgrade cost exponentially (×3)
+          upg.cost = Math.round(upg.cost * 3);
+          updateUI();
+          return;
+        } else if (upg.name === "🏭 Factory Expansion") {
+          // Reduce cooldown by 5% each purchase, with a minimum cooldown of 500ms
+          cooldownTime = Math.max(Math.round(cooldownTime * 0.95), 500);
+        } else if (upg.effect === "increaseBatch") {
+          productBatch++;
+        } else {
+          multiplier *= upg.effect;
+        }
+        // For non-product upgrades, increase cost by a factor of 1.5
+        if (upg.name !== "Product Upgrade") {
+          upg.cost = Math.round(upg.cost * 1.5);
+        }
+        updateUI();
+      }
+    }
+
+    /* =======================
+       Employee Functions
+    ========================== */
+    // Render employee buttons
+    function renderEmployees() {
+      const empContainer = document.getElementById("employees");
+      empContainer.innerHTML = "";
+      employees.forEach((emp, index) => {
+        const btn = document.createElement("button");
+        btn.className = "button employee";
+        btn.innerText = `${emp.name} (x${emp.quantity}) - $${formatNumber(emp.cost)}`;
+        btn.title = emp.description;
+        btn.onclick = () => purchaseEmployee(index);
+        empContainer.appendChild(btn);
+      });
+    }
+
+    // Purchase an employee
+    function purchaseEmployee(index) {
+      const emp = employees[index];
+      if (money >= emp.cost) {
+        money -= emp.cost;
+        emp.quantity++;
+        emp.cost = Math.round(emp.cost * 1.5);
+        if (!employeeTraining.unlocked) {
+          employeeTraining.unlocked = true;
+        }
+        updateUI();
+      }
+    }
+
+    // Render Employee Training button if available and not yet purchased
+    function renderEmployeeTraining() {
+      const container = document.getElementById("upgrades");
+      if (employeeTraining.unlocked && !employeeTraining.purchased) {
+        const btn = document.createElement("button");
+        btn.className = "button upgrade";
+        btn.innerText = `🏋️ Employee Training Protocol ($${formatNumber(employeeTraining.cost)})`;
+        btn.title = employeeTraining.description;
+        btn.onclick = purchaseEmployeeTraining;
+        container.appendChild(btn);
+      }
+    }
+
+    // Purchase Employee Training upgrade
+    function purchaseEmployeeTraining() {
+      if (money >= employeeTraining.cost) {
+        money -= employeeTraining.cost;
+        employeeTraining.purchased = true;
+        employees.forEach(emp => {
+          emp.rate = Math.round(emp.rate * employeeTraining.effect);
+        });
+        updateUI();
+      }
+    }
+
+    /* =======================
+       Prestige Functions
+    ========================== */
+    // Render Prestige Upgrades inside the Prestige Menu
+    function renderPrestigeUpgrades() {
+      const pUpgContainer = document.getElementById("prestigeUpgradesMenu");
+      pUpgContainer.innerHTML = "<h3>Prestige Upgrades</h3>";
+      prestigeUpgrades.forEach((pupg, index) => {
+        const btn = document.createElement("button");
+        btn.className = "button prestige-upgrade";
+        btn.innerText = `${pupg.name} (Cost: ${formatNumber(pupg.cost)} PP)`;
+        btn.title = pupg.description;
+        btn.onclick = () => purchasePrestigeUpgrade(index);
+        pUpgContainer.appendChild(btn);
+      });
+    }
+
+    // Purchase a Prestige Upgrade
+    function purchasePrestigeUpgrade(index) {
+      const pupg = prestigeUpgrades[index];
+      if (prestigePoints >= pupg.cost) {
+        prestigePoints -= pupg.cost;
+        if (pupg.name.includes("Divine Efficiency")) {
+          multiplier *= pupg.effect;
+        } else if (pupg.name.includes("Temporal Mastery")) {
+          cooldownTime = Math.round(cooldownTime * pupg.effect);
+        } else if (pupg.name.includes("Cosmic Workforce")) {
+          employees.forEach(emp => {
+            emp.rate = Math.round(emp.rate * pupg.effect);
+          });
+        } else if (pupg.name.includes("Galactic Expansion")) {
+          multiplier *= pupg.effect;
+        } else if (pupg.name.includes("Eternal Workshop")) {
+          const product = factories[factoryIndex].products[currentProductIndex];
+          product.base = Math.round(product.base * pupg.effect);
+        } else if (pupg.name.includes("Prestige Pure Multi")) {
+          prestigeMulti *= pupg.effect;
+        } else if (pupg.name.includes("Prestige Auto-Operator")) {
+          employees.forEach(emp => {
+            emp.rate = Math.round(emp.rate * pupg.effect);
+          });
+        } else if (pupg.name.includes("VIP Client Order")) {
+          vipChance += 0.02;
+          vipMultiplier *= 1.05;
+        }
+        pupg.cost = Math.round(pupg.cost * 1.5);
+        updateUI();
+      }
+    }
+
+    /* =======================
+       Production & Automation
+    ========================== */
+    // Handle manual production button click with a cooldown timer (updates every 100ms)
+    document.getElementById("produce").addEventListener("click", function() {
+      if (!producing) {
+        producing = true;
+        let countdown = cooldownTime;
+        const interval = setInterval(() => {
+          countdown -= 100;
+          document.getElementById("cooldown").innerText = "⏳ Cooldown: " + (countdown / 1000).toFixed(1) + "s";
+          if (countdown <= 0) {
+            clearInterval(interval);
+            const product = factories[factoryIndex].products[currentProductIndex];
+            let earned = product.base * multiplier * prestigeMulti * productBatch;
+            // Check for a VIP order chance
+            if (Math.random() < vipChance) {
+              earned *= vipMultiplier;
+              alert(`VIP Order! Your product was ordered by a VIP client for a ${vipMultiplier}x bonus!`);
+            }
+            money += earned;
+            totalEarned += earned;
+            totalProductsProduced++;
+            checkChallenge();
+            updateUI();
+            producing = false;
+            document.getElementById("cooldown").innerText = "⏳ Cooldown: Ready";
+          }
+        }, 100);
+      }
+    });
+
+    // Employees generate passive income every second
+    setInterval(() => {
+      const totalProduction = employees.reduce((sum, emp) => sum + (emp.rate * emp.quantity), 0);
+      if (totalProduction > 0) {
+        const earned = totalProduction * multiplier * prestigeMulti;
+        money += earned;
+        totalEarned += earned;
+        updateUI();
+      }
+    }, 1000);
+
+    // Challenge: When total products produced reaches 100, apply a bonus multiplier (+10%)
+    function checkChallenge() {
+      if (!challengeBonusApplied && totalProductsProduced >= 100) {
+        multiplier *= 1.1;
+        challengeBonusApplied = true;
+        alert("Challenge Completed: Production Mastery! Bonus multiplier applied (+10%).");
+      }
+    }
+
+    /* =======================
+       Prestige Menu Handling
+    ========================== */
+    // Update Prestige Menu values
+    function updatePrestigeMenu() {
+      // Calculate potential new PP gain (1 PP per $1K earned)
+      let availablePP = Math.max(Math.floor(totalEarned / 1000) - prestigePoints, 0);
+      document.getElementById("earnedPP").innerText = availablePP;
+      document.getElementById("livePP").innerText = prestigePoints;
+      document.getElementById("totalEarnedDisplay").innerText = formatNumber(totalEarned);
+      document.getElementById("currentFactory").innerText = factories[factoryIndex].name;
+      const nextFactoryName = factories[factoryIndex + 1] ? factories[factoryIndex + 1].name : "Max Level";
+      document.getElementById("nextFactory").innerText = nextFactoryName;
+      document.getElementById("baseValue").innerText = factories[factoryIndex].products[0].base;
+      const bestValue = factories[factoryIndex].products[factories[factoryIndex].products.length - 1].base;
+      document.getElementById("bestValue").innerText = bestValue;
+      // Enable or disable the confirm button based on money
+      const confirmBtn = document.getElementById("confirmPrestige");
+      if (money < 1000) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = "Not Enough Money";
+      } else {
+        confirmBtn.disabled = false;
+        confirmBtn.innerText = "✔ Confirm";
+      }
+    }
+
+    // Open Prestige Menu (always open regardless of money)
+    document.getElementById("prestige").addEventListener("click", function() {
+      document.getElementById("prestigeMenu").style.display = "block";
+      updatePrestigeMenu();
+      renderPrestigeUpgrades();
+    });
+
+    // Close Prestige Menu
+    document.getElementById("closePrestige").addEventListener("click", function() {
+      document.getElementById("prestigeMenu").style.display = "none";
+    });
+
+    // Confirm Prestige: Only works if you have at least $1K
+    document.getElementById("confirmPrestige").addEventListener("click", function() {
+      if (money >= 1000) {
+        const newPP = Math.max(Math.floor(totalEarned / 1000) - prestigePoints, 0);
+        prestigePoints += newPP;
+        // Reset progress values
+        money = 0;
+        multiplier = 1;
+        prestigeMulti = 1;
+        cooldownTime = baseCooldownTime;
+        currentProductIndex = 0;
+        totalProductsProduced = 0;
+        challengeBonusApplied = false;
+        productBatch = 1;
+        // Advance to next factory if available
+        if (factoryIndex < factories.length - 1) {
+          factoryIndex++;
+        }
+        // Reset normal upgrades, employees, and employee training (with cheaper values)
+        upgrades = [
+          { name: "Quality Increase", cost: 25, effect: 1.5, description: "Increase production multiplier by 50%." },
+          { name: "⚙️ Speedy Assembly", cost: 50, effect: 0.9, description: "Reduce production cooldown by 10%." },
+          { name: "Product Upgrade", cost: 250, effect: "upgradeProduct", description: "Upgrade product to next tier. Next: " },
+          { name: "🏭 Factory Expansion", cost: 200, effect: 0.95, description: "Reduce production cooldown by 5%." },
+          { name: "📦 Batch Production", cost: 400, effect: "increaseBatch", description: "Increase products produced per click. Next batch size: " }
+        ];
+        employees = [
+          { name: "👷 Efficient Operator", cost: 75, rate: 1, quantity: 0, description: "Generates $1/sec per operator." },
+          { name: "👨‍🔧 Skilled Worker", cost: 250, rate: 5, quantity: 0, description: "Generates $5/sec per worker." },
+          { name: "🛠️ Master Craftsman", cost: 1000, rate: 20, quantity: 0, description: "Generates $20/sec per craftsman." },
+          { name: "🏆 Production Supervisor", cost: 4000, rate: 50, quantity: 0, description: "Generates $50/sec per supervisor." },
+          { name: "💼 Operations Manager", cost: 7500, rate: 100, quantity: 0, description: "Generates $100/sec per manager." }
+        ];
+        employeeTraining = { unlocked: false, cost: 150, effect: 1.2, purchased: false, description: "Increase all employee production by 20%." };
+        updateUI();
+      } else {
+        alert("You do not have enough money to prestige!");
+      }
+      document.getElementById("prestigeMenu").style.display = "none";
+    });
+
+    // Initialize UI on window load
+    window.onload = updateUI;
+  </script>
+</body>
+</html>
