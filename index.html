@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Static's Infinite Factory Tycoon</title>
   <style>
-    /* ===========================
+    /* ===============================
        GLOBAL STYLES
-    ============================ */
+    ================================ */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -19,122 +19,125 @@
     .container {
       max-width: 900px;
       margin: auto;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0,0,0,0.85);
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
       position: relative;
     }
     .button {
       padding: 10px 20px;
       margin: 10px 5px;
       border: none;
-      font-size: 16px;
+      font-size:16px;
       cursor: pointer;
-      background-color: #007bff;
-      color: #fff;
-      border-radius: 5px;
+      background-color:#007bff;
+      color:#fff;
+      border-radius:5px;
       transition: background 0.3s;
-      display: inline-block;
+      display:inline-block;
     }
     .button:hover {
       background-color: #0056b3;
     }
-    .gold-button {
-      background-color: #FFD700 !important;
-      color: #000 !important;
-      font-weight: normal;
+    /* Red background if SHIFT/SPACE (mass buy) is down */
+    .mass-buy-active {
+      background-color: #9d0707 !important;
     }
     .money-line {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 10px;
+      font-size:24px;
+      font-weight:bold;
+      margin-bottom:10px;
     }
     .cooldown {
-      font-size: 14px;
-      color: #bbb;
+      font-size:14px;
+      color:#bbb;
     }
     .upgrade-container,
     .selling-container,
     .employee-container {
-      margin-top: 20px;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      display: flex;
-      flex-wrap: wrap;
+      margin-top:20px;
+      padding:15px;
+      background: rgba(255,255,255,0.1);
+      border-radius:10px;
+      display:flex;
+      flex-wrap:wrap;
       justify-content: space-around;
     }
-    .upgrade,
-    .employee {
+    .upgrade, .employee {
       flex: 1 1 45%;
-      margin: 5px;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 5px;
-      cursor: pointer;
+      margin:5px;
+      padding:10px;
+      background: rgba(0,0,0,0.5);
+      border-radius:5px;
+      cursor:pointer;
       transition: background 0.3s;
     }
-    .upgrade:hover,
-    .employee:hover {
-      background: rgba(0, 0, 0, 0.7);
+    .upgrade:hover, .employee:hover {
+      background: rgba(0,0,0,0.7);
     }
-    /* Modals: Prestige, Stats, Settings, Sell Explanation */
+    /* GOLD-BUTTON for special upgrades */
+    .gold-button {
+      background-color:#FFD700 !important;
+      color:#000 !important;
+      font-weight:normal;
+    }
+    /* Modal Menus (Prestige, Stats, Settings, etc.) */
     .modal-menu {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-      z-index: 10000;
-      max-width: 80%;
-      font-size: 14px;
+      display:none;
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      background:#222;
+      padding:20px;
+      border-radius:10px;
+      box-shadow:0 0 10px rgba(255,255,255,0.2);
+      z-index:9999;
+      max-width:80%;
+      font-size:14px;
     }
     .modal-menu h2 {
-      margin-top: 0;
+      margin-top:0;
     }
-    /* Notification */
+    /* Notification for VIP, etc. */
     .notification {
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: rgba(0,0,0,0.8);
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 5px;
-      display: none;
-      z-index: 20000;
-      max-width: 70%;
-      font-size: 16px;
+      position:fixed;
+      top:10px;
+      left:50%;
+      transform:translateX(-50%);
+      background:rgba(0,0,0,0.8);
+      color:#fff;
+      padding:10px 20px;
+      border-radius:5px;
+      display:none;
+      z-index:10000;
+      max-width:70%;
+      font-size:16px;
     }
-    /* QR bottom-left */
+    /* QR Code bottom-left (200x200) */
     .qr-container {
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      width: 200px;
-      height: 200px;
-      z-index: 1500;
+      position:fixed;
+      bottom:10px;
+      left:10px;
+      width:200px;
+      height:200px;
+      z-index:1500;
     }
     .qr-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      width:100%;
+      height:100%;
+      object-fit:contain;
     }
-    /* Disabled produce button if backpack is full */
+    /* Disabled produce if backpack is full, etc. */
     .disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+      opacity:0.5;
+      cursor:not-allowed;
     }
   </style>
 </head>
 <body>
-  <!-- Notification Box -->
+  <!-- Notification for VIP/challenges -->
   <div class="notification" id="notificationBox"></div>
 
   <div class="container">
@@ -149,36 +152,30 @@
 
     <h2>🏭 Factory Production</h2>
     <p>🏭 Factory: <span id="factoryName"></span></p>
-    <p>
-      📦 Product: <span id="productName"></span>
-      (<span id="prodUsed"></span>/∞)
-      (Base: <span id="productBase">0</span>, Batch: <span id="productBatch">1</span>)
-    </p>
-    <button class="button" id="produce" title="...">🚀 Produce Product</button>
+    <!-- We remove the "Used/∞" line. We keep base & batch. -->
+    <p>📦 Product: <span id="productName"></span> (Base: <span id="productBase">0</span>, Batch: <span id="productBatch">1</span>)</p>
+    <button class="button" id="produce" title="Produce Product">🚀 Produce Product</button>
     <p class="cooldown" id="cooldown">⏳ Cooldown: Ready</p>
 
-    <!-- SELLING SYSTEM (Hidden until after 1st Prestige) -->
+    <!-- Normal Upgrades above selling system -->
+    <div class="upgrade-container">
+      <h2 style="width:100%;">📈 Upgrades</h2>
+      <div id="upgrades" style="width:100%;display:flex;flex-wrap:wrap;justify-content:center;"></div>
+    </div>
+
+    <!-- Selling System (Hidden if not unlocked) -->
     <div class="selling-container" id="sellingArea" style="display:none;">
       <h2>💼 Selling System</h2>
-      <p>
-        Backpack: <span id="backpackUsed">0</span> / <span id="backpackCapacity">0</span>
-      </p>
-      <button class="button" id="sellOne">Sell 1</button>
+      <p>Backpack: <span id="backpackUsed">0</span> / <span id="backpackCapacity">0</span></p>
       <button class="button" id="sellAll">Sell All</button>
       <p class="cooldown" id="sellCooldown">🕒 Selling Timer: Ready</p>
       <div id="sellingUpgrades"></div>
     </div>
 
-    <!-- Upgrades -->
-    <div class="upgrade-container">
-      <h2 style="width:100%">📈 Upgrades</h2>
-      <div id="upgrades"></div>
-    </div>
-
-    <!-- Employees (below selling) -->
+    <!-- Employees below the selling system -->
     <div class="employee-container">
-      <h2 style="width:100%">👥 Employees</h2>
-      <div id="employees"></div>
+      <h2 style="width:100%;">👥 Employees</h2>
+      <div id="employees" style="width:100%;display:flex;flex-wrap:wrap;justify-content:center;"></div>
     </div>
 
     <!-- Buttons for Prestige, Stats, Settings -->
@@ -188,6 +185,7 @@
       <button class="button" id="settingsBtn">⚙ Settings</button>
     </div>
 
+    <!-- Credits -->
     <p style="margin-top:30px;">
       Made By
       <a href="https://sites.google.com/view/staticquasar931" target="_blank" style="color:#00d1ff;">
@@ -196,7 +194,7 @@
     </p>
   </div>
 
-  <!-- Double-Sized QR bottom-left (200x200) -->
+  <!-- QR Code (200x200) -->
   <div class="qr-container">
     <a href="https://sites.google.com/view/staticquasar931" target="_blank">
       <img 
@@ -210,14 +208,18 @@
   <!-- Prestige Menu -->
   <div class="modal-menu" id="prestigeMenu">
     <h2>🔄 Prestige Confirmation</h2>
-    <p>Prestiging resets your money, normal upgrades, employees, backpack, and on-hand products.</p>
-    <p>Your on-hand requirement grows each Prestige (1K, 50M, 50B...). PP are gained from total earned but each new point costs more than the last.</p>
+    <p>
+      Prestiging resets your money, normal upgrades, employees, and backpack.
+      The on-hand requirement grows each Prestige (1K, 50M, 50B...). 
+      PP gained from total earned, but each point costs more than the last.
+    </p>
     <p>Current PP: <span id="livePP">0</span></p>
-    <p>Potential New PP: <span id="earnedPP">0</span></p>
+    <p>Potential PP: <span id="earnedPP">0</span></p>
     <p>🏭 Current Factory: <span id="currentFactory"></span></p>
     <p>🏭 Next Factory: <span id="nextFactory"></span></p>
     <p>📦 Base Value: <span id="baseValue"></span></p>
     <p>📦 Best Value: <span id="bestValue"></span></p>
+
     <div id="prestigeUpgradesMenu"></div>
 
     <button class="button" id="confirmPrestige">✔ Confirm</button>
@@ -226,7 +228,7 @@
 
   <!-- Stats Menu -->
   <div class="modal-menu" id="statsMenu">
-    <h2>📊 Player Stats</h2>
+    <h2>📊 Stats</h2>
     <div id="statsContent"></div>
     <button class="button" id="closeStats">❌ Close</button>
   </div>
@@ -234,305 +236,358 @@
   <!-- Settings Menu -->
   <div class="modal-menu" id="settingsMenu">
     <h2>⚙ Settings</h2>
-    <p>Manage various features here. Some info remains hidden until certain unlocks.</p>
-    <p style="color:#f33;font-weight:bold;">
-      Warning: The <em>Undo</em> may not work on some browsers if you refresh quickly.
-    </p>
+    <p>Manage game features here. Some content is hidden until you unlock it.</p>
     <button class="button" id="resetGame">🔁 Reset Progress</button>
     <p id="resetTimer" style="color:#f55;"></p>
+    <p style="color:#f33;"><strong>Warning:</strong> The <em>Undo</em> may not work in all browsers if you refresh quickly.</p>
     <button class="button" id="closeSettings">❌ Close</button>
   </div>
 
-  <!-- Sell Explanation Popup (after 1st Prestige) -->
+  <!-- Explanation for Selling after 1st Prestige -->
   <div class="modal-menu" id="sellExplain" style="display:none;">
-    <h2>🌟 New System Unlocked!</h2>
+    <h2>🎉 Selling System Unlocked!</h2>
     <p>
-      You've discovered a new <strong>Selling System</strong>!<br/>
-      From now on, producing a product places it into your backpack instead of immediately earning money.<br/>
-      Press "Sell 1" or "Sell All" to convert those products into cash, or buy the "Auto Tycoon" prestige upgrade to automate it!
+      Now, producing products places them into a backpack instead of earning money immediately.
+      Press "Sell All" to convert items to cash! An employee can also help expand your backpack. 
+      Keep exploring for more secrets!
     </p>
-    <button class="button" id="closeSellExplain">Got It</button>
+    <button class="button" id="closeSellExplain">OK</button>
   </div>
 
   <script>
     "use strict";
 
-    /* ======================
+    /* =============================
        1. NUMBER FORMATTING
-    ======================= */
-    function formatNumber(num) {
-      if (num === 0) return "0.00";
-      const abs = Math.abs(num);
-      const sign = (num < 0) ? "-" : "";
-
-      if (abs >= 1e22) {
-        return sign + abs.toExponential(3);
+    ============================== */
+    // Extended short-scale + fallback to scientific with more expansions
+    const scaleUnits = [
+      { v:1e3, l:"K" },
+      { v:1e6, l:"M" },
+      { v:1e9, l:"B" },
+      { v:1e12, l:"T" },
+      { v:1e15, l:"Qa" },
+      { v:1e18, l:"Qi" },
+      { v:1e21, l:"Sx" },
+      { v:1e24, l:"Sp" },
+      { v:1e27, l:"Oc" },
+      { v:1e30, l:"No" },
+      { v:1e33, l:"De" },
+      { v:1e36, l:"Ud" },
+      { v:1e39, l:"Dd" },
+      { v:1e42, l:"Td" },
+      { v:1e45, l:"Qd" },
+      { v:1e48, l:"Pd" },
+      { v:1e51, l:"Hd" },
+      // ... can expand as you want ...
+    ];
+    function formatNumber(num){
+      if(num===0) return "0.00";
+      let abs=Math.abs(num);
+      let sign=(num<0)?"-":"";
+      // fallback to e if >1e100?
+      if(abs>=1e100){
+        return sign+abs.toExponential(3);
       }
-      const scale = [
-        { v: 1e3, l: "K" },
-        { v: 1e6, l: "M" },
-        { v: 1e9, l: "B" },
-        { v: 1e12, l: "T" },
-        { v: 1e15, l: "Q" },
-        { v: 1e18, l: "Qi" },
-        { v: 1e21, l: "Si" }
-      ];
-      for (let i = scale.length - 1; i >= 0; i--) {
-        if (abs >= scale[i].v) {
-          return sign + (abs / scale[i].v).toFixed(2) + " " + scale[i].l;
+      for(let i=scaleUnits.length-1;i>=0;i--){
+        if(abs>=scaleUnits[i].v){
+          return sign+(abs/scaleUnits[i].v).toFixed(2)+" "+scaleUnits[i].l;
         }
       }
-      return sign + abs.toFixed(2);
+      // if <1e3
+      return sign+abs.toFixed(2);
     }
-
-    function formatCooldown(ms) {
-      if (ms <= 0) return "0s";
-      let s = ms / 1000;
-      if (s >= 1) {
-        // up to 2 decimals
-        let str = s.toFixed(2).replace(/\.00$/, "");
-        return str + "s";
+    function formatCooldown(ms){
+      if(ms<=0) return "0s";
+      let s=ms/1000;
+      if(s>=1){
+        let str=s.toFixed(2).replace(/\.00$/,"");
+        return str+"s";
       }
-      let str = s.toFixed(4).replace(/0+$/, "");
-      return str + "s";
+      let str=s.toFixed(4).replace(/0+$/,"");
+      return str+"s";
     }
 
-    /* ======================
+    /* =============================
        2. GAME STATE
-    ======================= */
+    ============================== */
+    // read from localStorage
     let money = parseFloat(localStorage.getItem("money")) || 0;
     let totalEarned = parseFloat(localStorage.getItem("totalEarned")) || 0;
-    let prestigePoints = parseInt(localStorage.getItem("prestigePoints")) || 0;
-    let multiplier = parseFloat(localStorage.getItem("multiplier")) || 1;
-    let prestigeMulti = parseFloat(localStorage.getItem("prestigeMulti")) || 1;
-    let totalProductsProduced = parseInt(localStorage.getItem("totalProductsProduced")) || 0;
-    let productBatch = parseInt(localStorage.getItem("productBatch")) || 1;
-    let factoryIndex = parseInt(localStorage.getItem("factoryIndex")) || 0;
-    let currentProductIndex = parseInt(localStorage.getItem("currentProductIndex")) || 0;
-    let cooldownTime = parseFloat(localStorage.getItem("cooldownTime")) || 5000;
-    let lastSaveTime = parseInt(localStorage.getItem("lastSaveTime")) || Date.now();
+    let prestigePoints= parseFloat(localStorage.getItem("prestigePoints")) || 0; // ensure float
+    let multiplier= parseFloat(localStorage.getItem("multiplier")) || 1;
+    let prestigeMulti= parseFloat(localStorage.getItem("prestigeMulti")) || 1;
+    let totalProductsProduced= parseInt(localStorage.getItem("totalProductsProduced")) || 0;
+    let productBatch= parseInt(localStorage.getItem("productBatch")) || 1;
+    let factoryIndex= parseInt(localStorage.getItem("factoryIndex")) || 0;
+    let currentProductIndex= parseInt(localStorage.getItem("currentProductIndex")) || 0;
+    let cooldownTime= parseFloat(localStorage.getItem("cooldownTime")) || 5000;
+    let maxMoneyHeld= parseFloat(localStorage.getItem("maxMoneyHeld")) || 0;
 
-    // track challenges
-    let challengeBonusApplied = (localStorage.getItem("challengeBonusApplied") === "true");
+    let vipChance= parseFloat(localStorage.getItem("vipChance")) || 0.05;
+    let vipMultiplier= parseFloat(localStorage.getItem("vipMultiplier")) || 20;
+    let prestigeCount= parseInt(localStorage.getItem("prestigeCount")) || 0;
+    let nextPPcost= parseFloat(localStorage.getItem("nextPPcost")) || 1000;
 
-    // max money held
-    let maxMoneyHeld = parseFloat(localStorage.getItem("maxMoneyHeld")) || 0;
-    // vip
-    let vipChance = parseFloat(localStorage.getItem("vipChance")) || 0.05; 
-    let vipMultiplier = parseFloat(localStorage.getItem("vipMultiplier")) || 20; 
-    // prestige system
-    let prestigeCount = parseInt(localStorage.getItem("prestigeCount")) || 0;
-    let nextPPcost = parseFloat(localStorage.getItem("nextPPcost")) || 1000;
+    let challengeBonusApplied= (localStorage.getItem("challengeBonusApplied")==="true");
+    let lastSaveTime= parseInt(localStorage.getItem("lastSaveTime")) || Date.now();
 
     // SELLING
-    let sellingUnlocked = (prestigeCount > 0);
-    let backpackCapacity = parseInt(localStorage.getItem("backpackCapacity")) || 10;
-    let backpackUsed = parseInt(localStorage.getItem("backpackUsed")) || 0;
-    let sellingTime = 3000;
-    let selling = false;
-    let autoProduce = false;
-    let autoSell = false;
+    let sellingUnlocked= (prestigeCount>0);
+    let backpackCapacity= parseInt(localStorage.getItem("backpackCapacity"))||10;
+    let backpackUsed= parseInt(localStorage.getItem("backpackUsed"))||0;
+    let sellingTime= 3000;
+    let autoProduce= (localStorage.getItem("autoProduce")==="true");
+    let autoSell= (localStorage.getItem("autoSell")==="true");
 
-    // SHIFT/SPACE detection
-    let shiftDown = false;
-    let spaceDown = false;
+    // SHIFT/SPACE detection => will set a class
+    let shiftDown=false; 
+    let spaceDown=false;
 
-    // Are we in the 10s reset window?
-    let resetInProgress = false;
+    // Are we in the "reset confirm" window?
+    let resetInProgress=false;
 
-    // For offline progress
-    const now = Date.now();
-    const diffMs = now - lastSaveTime;
-    const diffSec = Math.floor(diffMs / 1000);
-    // We'll grant offline production from employees only:
-    let offlineProduction = 0;
-
-    /* FACTORIES & PRODUCTS */
-    const factories = [
+    // For offline production from employees
+    let offlineDiffSec= Math.floor((Date.now()- lastSaveTime)/1000);
+    
+    /* FACTORIES */
+    // We reorder them from lowest base to highest. Last is "Adult Toys".
+    const factories=[
       {
-        name: "🧸 Children's Toys Factory",
-        bg: "linear-gradient(to right, #ff9a9e, #fad0c4)",
-        products: [
-          { name: "Wooden Blocks", base: 10 },
-          { name: "Toy Cars", base: 15 },
-          { name: "Stuffed Animals", base: 20 },
-          { name: "Puzzle Games", base: 25 },
-          { name: "Action Figures", base: 30 },
-          { name: "Dollhouses", base: 35 },
-          { name: "Remote Control Cars", base: 40 },
-          { name: "Educational Kits", base: 45 },
-          { name: "Model Trains", base: 50 },
-          { name: "Custom Playsets", base: 60 }
+        name:"🧸 Children's Toys Factory",
+        bg:"linear-gradient(to right,#ff9a9e,#fad0c4)",
+        products:[
+          { name:"Wooden Blocks", base:10 },
+          { name:"Toy Cars", base:15 },
+          { name:"Stuffed Animals", base:20 },
+          { name:"Puzzle Games", base:25 },
+          { name:"Action Figures", base:30 },
+          { name:"Dollhouses", base:35 },
+          { name:"Remote Control Cars", base:40 },
+          { name:"Educational Kits", base:45 },
+          { name:"Model Trains", base:50 },
+          { name:"Custom Playsets", base:60 }
         ]
       },
-      /* ... other factories (omitted for brevity) ... */
       {
-        name: "🔞 Adult Toys Factory",
-        bg: "linear-gradient(to right, #4f0000, #8b0000)",
-        products: [
-          { name: "Basic Toys", base: 200 },
-          { name: "Novelty Items", base: 500 },
-          { name: "Special Editions", base: 800 },
-          { name: "Themed Sets", base: 1200 },
-          { name: "Remote-Controlled", base: 1800 },
-          { name: "Luxury Models", base: 2500 },
-          { name: "Smart Devices", base: 4000 },
-          { name: "Premium Kits", base: 6000 },
-          { name: "Custom Orders", base: 10000 },
-          { name: "Futuristic Concepts", base: 20000 }
+        name:"🍰 Sweet Treats Bakery",
+        bg:"linear-gradient(to right,#fbc2eb,#a6c1ee)",
+        products:[
+          { name:"Cupcakes", base:12 },
+          { name:"Cookies", base:18 },
+          { name:"Brownies", base:24 },
+          { name:"Donuts", base:30 },
+          { name:"Muffins", base:36 },
+          { name:"Pastries", base:42 },
+          { name:"Cakes", base:50 },
+          { name:"Macarons", base:58 },
+          { name:"Eclairs", base:66 },
+          { name:"Gourmet Pies", base:75 }
+        ]
+      },
+      {
+        name:"🎨 Artisan Crafts Workshop",
+        bg:"linear-gradient(to right,#a1c4fd,#c2e9fb)",
+        products:[
+          { name:"Handmade Cards", base:14 },
+          { name:"Ceramic Mugs", base:20 },
+          { name:"Knitted Scarves", base:26 },
+          { name:"Wooden Toys", base:32 },
+          { name:"Painted Vases", base:38 },
+          { name:"Handcrafted Jewelry", base:44 },
+          { name:"Embroidered Pillows", base:50 },
+          { name:"Custom Furniture", base:58 },
+          { name:"Vintage Clocks", base:66 },
+          { name:"Bespoke Art Pieces", base:75 }
+        ]
+      },
+      {
+        name:"📱 Tech Gadget Studio",
+        bg:"linear-gradient(to right,#a18cd1,#fbc2eb)",
+        products:[
+          { name:"Smartphone Cases", base:16 },
+          { name:"Wireless Earbuds", base:22 },
+          { name:"Portable Chargers", base:28 },
+          { name:"Bluetooth Speakers", base:34 },
+          { name:"Smartwatches", base:40 },
+          { name:"Tablet Accessories", base:46 },
+          { name:"VR Headsets", base:52 },
+          { name:"Drone Kits", base:60 },
+          { name:"Gaming Controllers", base:68 },
+          { name:"Advanced Gadgets", base:78 }
+        ]
+      },
+      {
+        name:"💎 Luxury Gift Atelier",
+        bg:"linear-gradient(to right,#ffecd2,#fcb69f)",
+        products:[
+          { name:"Artisanal Chocolates", base:18 },
+          { name:"Designer Scarves", base:26 },
+          { name:"Luxury Candles", base:34 },
+          { name:"Fine Wines", base:42 },
+          { name:"Handcrafted Jewelry", base:50 },
+          { name:"Exclusive Perfumes", base:58 },
+          { name:"Gourmet Baskets", base:66 },
+          { name:"Limited Edition Watches", base:74 },
+          { name:"Premium Leather Goods", base:82 },
+          { name:"Custom Masterpieces", base:90 }
+        ]
+      },
+      {
+        name:"🔞 Adult Toys Factory",
+        bg:"linear-gradient(to right,#4f0000,#8b0000)",
+        products:[
+          { name:"Basic Toys", base:200 },
+          { name:"Novelty Items", base:500 },
+          { name:"Special Editions", base:800 },
+          { name:"Themed Sets", base:1200 },
+          { name:"Remote-Controlled", base:1800 },
+          { name:"Luxury Models", base:2500 },
+          { name:"Smart Devices", base:4000 },
+          { name:"Premium Kits", base:6000 },
+          { name:"Custom Orders", base:10000 },
+          { name:"Futuristic Concepts", base:20000 }
         ]
       }
     ];
 
-    /* Upgrades & Employees, etc. */
-    let upgrades = JSON.parse(localStorage.getItem("upgrades")) || [
-      { name: "Quality Increase", cost: 25, effect: 1.5, description: "Production multiplier +50%.", purchased: 0 },
-      { name: "⚙️ Speedy Assembly", cost: 50, effect: 0.9, description: "Cooldown -10%.", purchased: 0 },
-      { name: "Product Upgrade", cost: 250, effect: "upgradeProduct", description: "Upgrade product tier.", purchased: 0 },
-      { name: "🏭 Factory Expansion", cost: 200, effect: 0.95, description: "Cooldown -5%.", purchased: 0 },
-      { name: "📦 Batch Production", cost: 400, effect: "increaseBatch", description: "Batch size +1.", purchased: 0 },
-    ];
-
-    let employees = JSON.parse(localStorage.getItem("employees")) || [
+    /* EMPLOYEES */
+    let employees= JSON.parse(localStorage.getItem("employees")) || [
       {
-        name: "👷 Worker #1",
-        cost: 75,
-        rate: 1,
-        quantity: 0,
-        // We'll keep the second perk hidden until unlocked
-        description: "Generates $1/sec. ??? ???",
-        purchased: 0
+        name:"👷 Worker #1",
+        cost:75,
+        rate:1,
+        quantity:0,
+        description:"Generates $1/sec + ?",
+        purchased:0
       },
       {
-        name: "👨‍🔧 Worker #2",
-        cost: 250,
-        rate: 5,
-        quantity: 0,
-        description: "Generates $5/sec. ??? ???",
-        purchased: 0
+        name:"👨‍🔧 Worker #2",
+        cost:500,
+        rate:5,
+        quantity:0,
+        description:"Generates $5/sec + ?",
+        purchased:0
       },
       {
-        name: "🛠️ Worker #3",
-        cost: 1000,
-        rate: 20,
-        quantity: 0,
-        description: "Generates $20/sec.",
-        purchased: 0
+        name:"📦 Porter #3",
+        cost:1500,
+        rate:0, 
+        quantity:0,
+        description:"Slowly increases backpack capacity? ???",
+        purchased:0
       }
-      // Add more employees if you want
     ];
 
-    let employeeTraining = JSON.parse(localStorage.getItem("employeeTraining")) || {
-      unlocked: false,
-      cost: 150,
-      effect: 1.2,
-      purchased: false,
-      description: "All employees +20% production."
+    // The first two have hidden synergy with selling or something.
+    // #3 specifically adds backpack capacity over time, but hidden until unlocked
+
+    let employeeTraining= JSON.parse(localStorage.getItem("employeeTraining")) || {
+      unlocked:false,
+      cost:200,
+      effect:1.2,
+      purchased:false,
+      description:"All employees +20% production."
     };
 
-    // Prestige Upgrades (Auto Tycoon cost is much higher now, e.g. 500)
-    let prestigeUpgrades = JSON.parse(localStorage.getItem("prestigeUpgrades")) || [
+    // Normal Upgrades
+    let upgrades= JSON.parse(localStorage.getItem("upgrades")) || [
+      { name:"Quality Increase", cost:25, effect:1.5, description:"Production multiplier +50%.", purchased:0 },
+      { name:"⚙️ Speedy Assembly", cost:50, effect:0.9, description:"Cooldown -10%.", purchased:0 },
+      { name:"Product Upgrade", cost:250, effect:"upgradeProduct", description:"Upgrade product tier.", purchased:0 },
+      { name:"🏭 Factory Expansion", cost:200, effect:0.95, description:"Cooldown -5%.", purchased:0 },
+      { name:"📦 Batch Production", cost:400, effect:"increaseBatch", description:"Batch size +1.", purchased:0 },
+    ];
+
+    // Prestige Upgrades
+    let prestigeUpgrades= JSON.parse(localStorage.getItem("prestigeUpgrades")) || [
       {
-        name: "Divine Efficiency ✨",
-        cost: 5,
-        effect: 1.1,
-        description: "Prestige Multi +10%.",
-        purchased: 0,
-        max: 999
+        name:"Divine Efficiency ✨",
+        cost:5,
+        effect:1.1,
+        description:"Prestige Multi +10%.",
+        purchased:0,
+        max:999
       },
       {
-        name: "Temporal Mastery ⏳",
-        cost: 10,
-        effect: 0.95,
-        description: "Cooldown -5%.",
-        purchased: 0,
-        max: 999
+        name:"Temporal Mastery ⏳",
+        cost:10,
+        effect:0.95,
+        description:"Cooldown -5%.",
+        purchased:0,
+        max:999
       },
       {
-        name: "Eternal Workshop 🏭",
-        cost: 25,
-        effect: 1.25,
-        description: "Product base value +25%.",
-        purchased: 0,
-        max: 999
+        name:"Eternal Workshop 🏭",
+        cost:25,
+        effect:1.25,
+        description:"Product base value +25%.",
+        purchased:0,
+        max:999
       },
       {
-        name: "Auto Tycoon (Stage)",
-        cost: 500,  // increased
-        effect: "autoStage",
-        description: "Stage 1 => Auto Produce, Stage 2 => Auto Sell.",
-        purchased: 0,
-        max: 2
+        name:"Auto Tycoon (Stage)",
+        cost:500, /* hidden second stage ??? */
+        effect:"autoStage",
+        description:"Stage 1 => ???, Stage 2 => ???",
+        purchased:0,
+        max:2
       },
       {
-        name: "Prestige Pure Multi",
-        cost: 20,
-        effect: 1.1,
-        description: "Prestige Multi +10%.",
-        purchased: 0,
-        max: 999
+        name:"Prestige Pure Multi",
+        cost:20,
+        effect:1.1,
+        description:"Prestige Multi +10%.",
+        purchased:0,
+        max:999
       },
       {
-        name: "VIP Client Order",
-        cost: 30,
-        effect: 0.02,
-        description: "VIP chance +2% (max 30%), VIP multiplier +5%.",
-        purchased: 0,
-        max: 500
+        name:"VIP Client Order",
+        cost:30,
+        effect:0.02,
+        description:"VIP chance +2% (cap 30%), VIP multi +5%.",
+        purchased:0,
+        max:500
       },
       {
-        name: "Selling Speed Mastery",
-        cost: 50,
-        effect: 0.9,
-        description: "Selling time -10%.",
-        purchased: 0,
-        max: 10
+        name:"Selling Speed Mastery",
+        cost:50,
+        effect:0.9,
+        description:"Selling time -10%.",
+        purchased:0,
+        max:10
       }
     ];
 
-    // Single button for backpacks
-    // We'll keep an array of backpack data in code, but display them one at a time
-    let backpackIndex = parseInt(localStorage.getItem("backpackIndex")) || 0;
-    let backpackData = JSON.parse(localStorage.getItem("backpackData"));
-    if (!backpackData) {
-      // 30 items + infinite hole expansions
-      backpackData = [];
-      for(let i=1;i<=30;i++){
-        backpackData.push({
-          name: `Backpack #${i}`,
-          cost: Math.round(100 * Math.pow(2.5, i)),
-          effect: 10 * i
-        });
-      }
-      backpackData.push({
-        name: "A Hole",
-        cost: 1e8,
-        effect: 1000
-      });
-      backpackData.push({
-        name: "A Bigger Hole",
-        cost: 5e9,
-        effect: 5000
-      });
-    }
+    // SELLING UPGRADES
+    // "Sell Multi" that scales from +40 -> +5 as you buy more
+    // cost doubles each time
+    // We'll store them in an array. Each purchase changes the effect
+    let sellMultiIndex= parseInt(localStorage.getItem("sellMultiIndex"))||0;
+    let sellMultiLevels= [40,30,20,10,5]; // eventually 5 is the end
+    let sellMultiCost= parseFloat(localStorage.getItem("sellMultiCost"))||1000; // cost for first purchase
 
-    // Selling Upgrades: "Selling Multi," "Faster Sell," "Bulk Sell"...
-    // We'll store them in a single array if you want multiple. Let's do a small approach:
-    let sellingUpgrades = JSON.parse(localStorage.getItem("sellingUpgrades")) || [
-      { name: "Selling Multi", cost: 1000, effect: 1.5, desc: "Earnings from selling +50%.", purchased: 0 },
-      { name: "Faster Sell", cost: 5000, effect: 0.85, desc: "Selling time -15%.", purchased: 0 },
-      { name: "Bulk Sell", cost: 15000, effect: 2, desc: "Double items sold at once (still WIP).", purchased: 0 }
+    let sellingUpgrades= JSON.parse(localStorage.getItem("sellingUpgrades")) || [
+      {
+        name:"Faster Sell",
+        cost:3000,
+        effect:0.9,
+        desc:"Selling time -10% each purchase. Cost x2 per purchase",
+        purchased:0
+      }
     ];
 
-    // Offline progress from employees only
+    /* OFFLINE PRODUCTION (employee only) */
     setTimeout(()=>{
-      let eRate = employees.reduce((sum,e)=> sum+(e.rate* e.quantity),0);
-      if(eRate>0 && diffSec>0){
-        let earned = eRate * multiplier * prestigeMulti * diffSec;
-        money+=earned;
-        totalEarned+=earned;
-        showNotification(`You earned $${formatNumber(earned)} while offline for ${diffSec}s!`);
-        updateUI();
+      if(offlineDiffSec>0){
+        let eRate= employees.reduce((sum,e)=> sum+(e.rate* e.quantity),0);
+        if(eRate>0){
+          let earned= eRate* multiplier* prestigeMulti* offlineDiffSec;
+          money+=earned;
+          totalEarned+=earned;
+          showNotification(`While offline ${offlineDiffSec}s, you earned $${formatNumber(earned)}!`);
+          updateUI();
+        }
       }
     },50);
 
@@ -558,31 +613,44 @@
       localStorage.setItem("prestigeCount", prestigeCount);
       localStorage.setItem("nextPPcost", nextPPcost);
 
-      localStorage.setItem("upgrades", JSON.stringify(upgrades));
       localStorage.setItem("employees", JSON.stringify(employees));
       localStorage.setItem("employeeTraining", JSON.stringify(employeeTraining));
+      localStorage.setItem("upgrades", JSON.stringify(upgrades));
       localStorage.setItem("prestigeUpgrades", JSON.stringify(prestigeUpgrades));
 
       localStorage.setItem("sellingUnlocked", sellingUnlocked);
       localStorage.setItem("backpackCapacity", backpackCapacity);
       localStorage.setItem("backpackUsed", backpackUsed);
-      localStorage.setItem("backpackIndex", backpackIndex);
-      localStorage.setItem("backpackData", JSON.stringify(backpackData));
+      localStorage.setItem("autoProduce", autoProduce);
+      localStorage.setItem("autoSell", autoSell);
+      localStorage.setItem("sellMultiIndex", sellMultiIndex);
+      localStorage.setItem("sellMultiCost", sellMultiCost);
       localStorage.setItem("sellingUpgrades", JSON.stringify(sellingUpgrades));
       localStorage.setItem("lastSaveTime", Date.now());
     }
 
     /* ======================
-       SHIFT/SPACE
+       SHIFT/SPACE DETECTION
     ======================= */
     window.addEventListener("keydown",(e)=>{
       if(e.key==="Shift") shiftDown=true;
       if(e.code==="Space") spaceDown=true;
+      refreshMassBuyUI();
     });
     window.addEventListener("keyup",(e)=>{
       if(e.key==="Shift") shiftDown=false;
       if(e.code==="Space") spaceDown=false;
+      refreshMassBuyUI();
     });
+    function refreshMassBuyUI(){
+      // If shiftDown||spaceDown => add .mass-buy-active to relevant buttons
+      let allBtns= document.querySelectorAll(".button");
+      if(shiftDown|| spaceDown){
+        allBtns.forEach(b=> b.classList.add("mass-buy-active"));
+      } else {
+        allBtns.forEach(b=> b.classList.remove("mass-buy-active"));
+      }
+    }
 
     /* ======================
        NOTIFICATION
@@ -603,48 +671,40 @@
     function updateUI(){
       if(money>maxMoneyHeld) maxMoneyHeld= money;
       document.getElementById("money").innerText= formatNumber(money);
-      document.getElementById("prestigePoints").innerText= prestigePoints;
+      document.getElementById("prestigePoints").innerText= formatNumber(prestigePoints);
       document.getElementById("multiplier").innerText= formatNumber(multiplier);
       document.getElementById("prestigeMulti").innerText= formatNumber(prestigeMulti);
 
-      // product info
       const fact= factories[factoryIndex];
       document.getElementById("factoryName").innerText= fact.name;
-      const prod= fact.products[currentProductIndex];
-      document.getElementById("productName").innerText= prod.name;
-      document.getElementById("productBase").innerText= formatNumber(prod.base);
+      const product= fact.products[currentProductIndex];
+      document.getElementById("productName").innerText= product.name;
+      document.getElementById("productBase").innerText= formatNumber(product.base);
       document.getElementById("productBatch").innerText= productBatch;
-      document.getElementById("prodUsed").innerText= totalProductsProduced;
 
-      // produce button tooltip => how much you get + cd
-      let potentialMoney=  prod.base * multiplier * prestigeMulti * productBatch;
-      if(Math.random()< vipChance){
-        // can't exactly do random. We'll do an average or simply mention possible VIP
-        potentialMoney*= vipMultiplier; 
-      }
-      let tip= `Potential Earn: ~$${formatNumber(potentialMoney)} per batch\nCooldown: ${formatCooldown(cooldownTime)}`;
-      if(shiftDown|| spaceDown){
-        tip+= "\n(Mass Buy Mode)";
-      }
+      // update produce button title => potential earn + cd
+      let potential= product.base* multiplier* prestigeMulti* productBatch;
+      // average or possible VIP? We'll show the no-VIP version
+      let tip= `Potential Earn (No VIP): ~$${formatNumber(potential)}\nCooldown: ${formatCooldown(cooldownTime)}`;
       document.getElementById("produce").title= tip;
 
       // selling
+      const sellArea= document.getElementById("sellingArea");
       if(sellingUnlocked){
-        document.getElementById("sellingArea").style.display="block";
+        sellArea.style.display="block";
         document.getElementById("backpackUsed").innerText= backpackUsed;
         document.getElementById("backpackCapacity").innerText= backpackCapacity;
-      }else{
-        document.getElementById("sellingArea").style.display="none";
+      } else {
+        sellArea.style.display="none";
       }
-
       // if backpack is full => disable produce
       const produceBtn= document.getElementById("produce");
       if(sellingUnlocked && backpackUsed>= backpackCapacity){
+        produceBtn.disabled=true;
         produceBtn.classList.add("disabled");
-        produceBtn.disabled= true;
-      } else {
+      } else{
+        produceBtn.disabled=false;
         produceBtn.classList.remove("disabled");
-        produceBtn.disabled= false;
       }
 
       renderUpgrades();
@@ -653,69 +713,73 @@
       renderEmployeeTraining();
       updatePrestigeMenu();
       updateBackground();
+      refreshMassBuyUI();
       saveGame();
     }
 
     /* ======================
-       3. RENDER UPGRADES
+       RENDER UPGRADES
     ======================= */
     function renderUpgrades(){
-      const cont= document.getElementById("upgrades");
-      cont.innerHTML="";
+      const container= document.getElementById("upgrades");
+      container.innerHTML="";
       upgrades.forEach((upg,i)=>{
         const btn= document.createElement("button");
         btn.className="button upgrade";
         if(upg.name==="Product Upgrade") btn.classList.add("gold-button");
 
-        let label= upg.name;
-        if(shiftDown|| spaceDown) label+= " (Mass Buy)";
-        label+= ` ($${formatNumber(upg.cost)})`;
+        // label
+        let label= `${upg.name} ($${formatNumber(upg.cost)})`;
         btn.innerText= label;
         btn.title= upg.description;
 
+        // special logic
         if(upg.name==="Product Upgrade"){
-          // if product is max => disable
+          // check if product is max
           const f= factories[factoryIndex];
           if(currentProductIndex>= f.products.length-1){
-            btn.disabled= true;
+            btn.disabled=true;
             btn.innerText= `${upg.name} (Max)`;
           }
         }
-        btn.onclick= ()=> purchaseUpgrade(i);
-        cont.appendChild(btn);
+        btn.onclick= ()=>{
+          if(shiftDown||spaceDown){
+            let done=0;
+            while(money>= upg.cost){
+              if(!attemptUpgradePurchase(upg)) break;
+              done++;
+            }
+            if(done>0) updateUI();
+          } else {
+            attemptUpgradePurchase(upg);
+            updateUI();
+          }
+        };
+        container.appendChild(btn);
       });
     }
-    function purchaseUpgrade(i){
-      const upg= upgrades[i];
-      if(shiftDown|| spaceDown){
-        let done=0;
-        while(money>= upg.cost){
-          if(!attemptUpgradePurchase(upg)) break;
-          done++;
-        }
-        if(done>0) updateUI();
-      }else{
-        attemptUpgradePurchase(upg);
-        updateUI();
-      }
-    }
     function attemptUpgradePurchase(upg){
-      if(money>= upg.cost){
+      if(money>=upg.cost){
         money-= upg.cost;
         upg.purchased++;
-        if(upg.name==="⚙️ Speedy Assembly" || upg.name==="🏭 Factory Expansion"){
+        if(upg.name==="⚙️ Speedy Assembly"|| upg.name==="🏭 Factory Expansion"){
           cooldownTime*= upg.effect;
-        } else if(upg.name==="Product Upgrade"){
+        }else if(upg.name==="Product Upgrade"){
           const f= factories[factoryIndex];
-          if(currentProductIndex< f.products.length-1) currentProductIndex++;
-        } else if(upg.effect==="increaseBatch"){
+          if(currentProductIndex< f.products.length-1){
+            currentProductIndex++;
+          }
+        }else if(upg.effect==="increaseBatch"){
           productBatch++;
-        } else {
+        }else{
           multiplier*= upg.effect;
         }
-        // scale cost
-        if(upg.purchased<5) upg.cost= Math.round(upg.cost*1.6);
-        else upg.cost= Math.round(upg.cost*2.5);
+        // cost scale
+        if(upg.purchased<5){
+          upg.cost= Math.round(upg.cost*1.6);
+        } else{
+          upg.cost= Math.round(upg.cost*2.5);
+        }
         return true;
       }
       return false;
@@ -725,43 +789,41 @@
        SELLING UPGRADES
     ======================= */
     function renderSellingUpgrades(){
-      const cont= document.getElementById("sellingUpgrades");
-      cont.innerHTML="";
+      const container= document.getElementById("sellingUpgrades");
+      container.innerHTML="";
+      if(!sellingUnlocked) return;
 
-      if(!sellingUnlocked) return; // hide if not unlocked
-
-      // Single button for backpack
-      const backpackBtn= document.createElement("button");
-      backpackBtn.className="button";
-      let bItem= backpackData[backpackIndex];
-      let label= `${bItem.name} (Cost: $${formatNumber(bItem.cost)})`;
-      if(shiftDown|| spaceDown) label+= " (Mass Buy)";
-      backpackBtn.innerText= label;
-      backpackBtn.title= `Upgrade your storage (+${bItem.effect} capacity)`;
-      backpackBtn.onclick= ()=>{
-        if(shiftDown|| spaceDown){
-          while(money>= bItem.cost){
-            if(!purchaseBackpack(bItem)) break;
+      // SELL MULTI => array-based
+      let sellMultiBtn= document.createElement("button");
+      sellMultiBtn.className="button upgrade";
+      let effect= sellMultiLevels[sellMultiIndex] ||5; // default 5
+      // if we are at last index => effect=5
+      let label=`Selling Multi +${effect}% ($${formatNumber(sellMultiCost)})`;
+      sellMultiBtn.innerText= label;
+      sellMultiBtn.title= `Boost product money from selling by +${effect}% (cost x2 after each). If at last level => +5% is the final.`;
+      sellMultiBtn.onclick= ()=>{
+        if(shiftDown||spaceDown){
+          while(money>=sellMultiCost){
+            if(!purchaseSellMulti()) break;
           }
           updateUI();
-        } else {
-          purchaseBackpack(bItem);
+        }else{
+          purchaseSellMulti();
           updateUI();
         }
       };
-      cont.appendChild(backpackBtn);
+      container.appendChild(sellMultiBtn);
 
-      // Next: some standard “Selling Multi,” “Faster Sell,” etc.
+      // Other upgrades
       sellingUpgrades.forEach((su,i)=>{
         const btn= document.createElement("button");
         btn.className="button upgrade";
-        let label= su.name+ ` ($${formatNumber(su.cost)})`;
-        if(shiftDown|| spaceDown) label+= " (Mass Buy)";
-        btn.innerText= label;
+        let l=`${su.name} ($${formatNumber(su.cost)})`;
+        btn.innerText= l;
         btn.title= su.desc;
         btn.onclick= ()=>{
-          if(shiftDown|| spaceDown){
-            while(money>= su.cost){
+          if(shiftDown||spaceDown){
+            while(money>=su.cost){
               if(!attemptSellingUpgrade(su)) break;
             }
             updateUI();
@@ -770,33 +832,38 @@
             updateUI();
           }
         };
-        cont.appendChild(btn);
+        container.appendChild(btn);
       });
     }
-    function purchaseBackpack(bItem){
-      if(money>= bItem.cost){
-        money-= bItem.cost;
-        backpackCapacity+= bItem.effect;
-        // move to next index if < length
-        if(backpackIndex< backpackData.length-1) backpackIndex++;
+    function purchaseSellMulti(){
+      if(money>=sellMultiCost){
+        money-= sellMultiCost;
+        // apply effect
+        let effect= sellMultiLevels[sellMultiIndex]||5;
+        // We want the "selling" to yield more money => We'll incorporate it as part of the "multiplier" only on selling? 
+        // For simplicity, let's just do => multiplier*= (1 + effect/100). Or store a separate "sellMult" var. 
+        // We'll just do a separate approach: We'll do => multiplier*(1 + effect/100), to incorporate it in final. 
+        // Or we can do "1 + effect/100" -> 1.4 => multiply. Let's do that:
+        multiplier*= (1+(effect/100));
+        // move index
+        if(sellMultiIndex< sellMultiLevels.length-1){
+          sellMultiIndex++;
+        }
+        // cost x2 each time
+        sellMultiCost= Math.round(sellMultiCost*2);
         return true;
       }
       return false;
     }
     function attemptSellingUpgrade(su){
-      if(money>= su.cost){
+      if(money>=su.cost){
         money-= su.cost;
         su.purchased++;
-        if(su.name.includes("Selling Multi")){
-          multiplier*= su.effect;  // or you can do "selling multi" => a separate variable for selling
-        } else if(su.name.includes("Faster Sell")){
-          sellingTime*= su.effect;
-        } else if(su.name.includes("Bulk Sell")){
-          // some effect
-          productBatch= Math.round(productBatch* su.effect);
+        if(su.name.includes("Faster Sell")){
+          // sellingTime -10% each purchase
+          sellingTime*= su.effect; 
+          su.cost= Math.round(su.cost*2);
         }
-        // scale cost
-        su.cost= Math.round(su.cost*1.6);
         return true;
       }
       return false;
@@ -806,32 +873,34 @@
        EMPLOYEES
     ======================= */
     function renderEmployees(){
-      const cont= document.getElementById("employees");
-      cont.innerHTML="";
+      const container= document.getElementById("employees");
+      container.innerHTML="";
       employees.forEach((emp,i)=>{
         const btn= document.createElement("button");
         btn.className="button employee";
-        let label= `${emp.name} (x${emp.quantity}) - $${formatNumber(emp.cost)}`;
-        if(shiftDown|| spaceDown) label+= " (Mass Buy)";
+        let label=`${emp.name} (x${emp.quantity}) - $${formatNumber(emp.cost)}`;
+        btn.innerText=label;
+        // if selling is unlocked => reveal second perk if we have ??? 
         let desc= emp.description;
-        // if we have unlocked selling => reveal the second perk
-        if(sellingUnlocked && desc.includes("???")){
-          desc= desc.replace("??? ???","Has special synergy with Selling/Backpack!");
+        if(sellingUnlocked && desc.includes("?")){
+          // for #3: "Slowly increases backpack capacity? ???"
+          // let's fully reveal: "Slowly increases backpack capacity over time"
+          desc= desc.replace("? ???","slowly adds +1 capacity each 10s").replace("?"," & synergy");
         }
-        btn.innerText= label;
-        btn.title= desc;
+        btn.title=desc;
+        // mass buy
         btn.onclick= ()=>{
-          if(shiftDown|| spaceDown){
-            while(money>=emp.cost){
+          if(shiftDown||spaceDown){
+            while(money>= emp.cost){
               if(!attemptEmployeePurchase(emp)) break;
             }
             updateUI();
-          } else {
+          } else{
             attemptEmployeePurchase(emp);
             updateUI();
           }
         };
-        cont.appendChild(btn);
+        container.appendChild(btn);
       });
     }
     function attemptEmployeePurchase(emp){
@@ -839,82 +908,137 @@
         money-= emp.cost;
         emp.quantity++;
         emp.purchased++;
-        if(emp.purchased<5){
-          emp.cost= Math.round(emp.cost*1.5);
-        } else{
-          emp.cost= Math.round(emp.cost*2.2);
-        }
+        // cost
+        if(emp.purchased<5) emp.cost=Math.round(emp.cost*1.5);
+        else emp.cost=Math.round(emp.cost*2.2);
         return true;
       }
       return false;
     }
     function renderEmployeeTraining(){
       if(employeeTraining.unlocked && !employeeTraining.purchased){
-        const cont= document.getElementById("upgrades");
+        const upgCont= document.getElementById("upgrades");
         const btn= document.createElement("button");
         btn.className="button upgrade";
-        let label= `Employee Training ($${formatNumber(employeeTraining.cost)})`;
-        if(shiftDown|| spaceDown) label+= " (Mass Buy)";
-        btn.innerText= label;
+        let lb=`Employee Training ($${formatNumber(employeeTraining.cost)})`;
+        btn.innerText= lb;
         btn.title= employeeTraining.description;
         btn.onclick= ()=>{
           if(money>= employeeTraining.cost){
             money-= employeeTraining.cost;
-            employeeTraining.purchased= true;
-            employees.forEach(e=> e.rate= Math.round(e.rate* employeeTraining.effect));
+            employeeTraining.purchased=true;
+            employees.forEach(e=> e.rate=Math.round(e.rate* employeeTraining.effect));
             updateUI();
           }
         };
-        cont.appendChild(btn);
+        upgCont.appendChild(btn);
       }
     }
 
-    /* Passive Income from employees (1-second intervals). We'll do 1 second, no problem. */
+    // We'll also do a setInterval that if we have an employee #3 that "slowly adds capacity each 10s"
     setInterval(()=>{
-      let totalEmpProd= employees.reduce((sum,e)=> sum+(e.rate* e.quantity),0);
-      if(totalEmpProd>0){
-        let earned= totalEmpProd* multiplier* prestigeMulti;
-        money+=earned;
-        totalEarned+=earned;
-        updateUI();
+      if(sellingUnlocked){
+        // see if #3 is purchased
+        let e3= employees.find(e=> e.name.includes("Porter #3"));
+        if(e3 && e3.quantity>0){
+          // for each quantity => +1 capacity / 10s
+          backpackCapacity+= e3.quantity;
+          updateUI();
+        }
       }
-    },1000);
+    },10000);
+
+    /* ======================
+       OFFLINE-LIKE PRODUCTION
+    ======================= */
+    // We already gave them a chunk of money on load.
+    // We'll keep the normal 1s employee loop for the rest.
 
     /* ======================
        PRODUCE
     ======================= */
     let producing=false;
     let produceInterval=null;
-    document.getElementById("produce").addEventListener("click", ()=>{
+    // keys for produce: Q, W, Up, Left => produce
+    // keys for selling: E, S, Down, Right => "Sell All"
+    let produceKeys=["q","w"];
+    let produceCodes=["ArrowUp","ArrowLeft"];
+    let sellKeys=["e","s"];
+    let sellCodes=["ArrowDown","ArrowRight"];
+    window.addEventListener("keydown",(e)=>{
+      // if user is pressing produce key => produce if not producing
+      if(produceKeys.includes(e.key.toLowerCase())|| produceCodes.includes(e.code)){
+        // check if user is also pressing a sell key => do nothing
+        if(currentlyPressingSellKey()) return;
+        if(!producing) doProduce();
+      }
+      // if user is pressing sell key => "Sell All" if not selling
+      if(sellKeys.includes(e.key.toLowerCase())|| sellCodes.includes(e.code)){
+        // check if user is also pressing produce key => do nothing
+        if(currentlyPressingProduceKey()) return;
+        if(!selling && backpackUsed>0 && sellingUnlocked){
+          doSellAll();
+        }
+      }
+    });
+    function currentlyPressingProduceKey(){
+      let pressed=false;
+      produceKeys.forEach(k=>{
+        if(keyDownSet.has(k)) pressed=true;
+      });
+      produceCodes.forEach(c=>{
+        if(keyDownSet.has(c)) pressed=true;
+      });
+      return pressed;
+    }
+    function currentlyPressingSellKey(){
+      let pressed=false;
+      sellKeys.forEach(k=>{
+        if(keyDownSet.has(k)) pressed=true;
+      });
+      sellCodes.forEach(c=>{
+        if(keyDownSet.has(c)) pressed=true;
+      });
+      return pressed;
+    }
+
+    // We'll store pressed keys in a set
+    let keyDownSet=new Set();
+    window.addEventListener("keydown",(e)=> keyDownSet.add(e.key.toLowerCase())|| keyDownSet.add(e.code));
+    window.addEventListener("keyup",(e)=> { 
+      keyDownSet.delete(e.key.toLowerCase()); 
+      keyDownSet.delete(e.code);
+    });
+
+    // normal produce
+    document.getElementById("produce").addEventListener("click",()=>{
       if(!producing) doProduce();
     });
     function doProduce(){
       producing=true;
-      let cd= cooldownTime;
+      let cd=cooldownTime;
       if(produceInterval) clearInterval(produceInterval);
       produceInterval= setInterval(()=>{
-        cd-=50; // update every 50ms for more frequent UI
+        cd-=50; 
         if(cd>0){
-          document.getElementById("cooldown").innerText= `⏳ Cooldown: ${formatCooldown(cd)}`;
+          document.getElementById("cooldown").innerText=`⏳ Cooldown: ${formatCooldown(cd)}`;
         } else{
           clearInterval(produceInterval);
-          // produce done
-          const f= factories[factoryIndex];
-          const p= f.products[currentProductIndex];
+          let f= factories[factoryIndex];
+          let p= f.products[currentProductIndex];
           let totalVal= p.base* multiplier* prestigeMulti* productBatch;
-
           if(!sellingUnlocked){
             // immediate money
-            if(Math.random()<vipChance){
+            if(Math.random()< vipChance){
               totalVal*= vipMultiplier;
               showNotification(`VIP order! +${vipMultiplier}x bonus`);
             }
-            money+=totalVal;
-            totalEarned+=totalVal;
-          }else{
-            // goes to backpack
-            let spaceLeft= backpackCapacity- backpackUsed;
-            let actual= productBatch> spaceLeft? spaceLeft: productBatch;
+            money+= totalVal;
+            totalEarned+= totalVal;
+          } else{
+            // backpack
+            let space= backpackCapacity- backpackUsed;
+            let actual= (productBatch>space)? space: productBatch;
             backpackUsed+= actual;
           }
           totalProductsProduced++;
@@ -924,177 +1048,169 @@
             showNotification("Challenge Completed: Production Mastery! +10% multiplier.");
           }
           producing=false;
-          document.getElementById("cooldown").innerText= "⏳ Cooldown: Ready";
+          document.getElementById("cooldown").innerText="⏳ Cooldown: Ready";
           updateUI();
         }
       },50);
     }
 
     /* ======================
-       SELLING
+       SELL (only "Sell All")
     ======================= */
     let sellingInterval=null;
-    document.getElementById("sellOne").addEventListener("click", ()=>{
-      if(!selling) sellN(1);
+    let selling=false;
+    document.getElementById("sellAll").addEventListener("click",()=>{
+      if(!selling && backpackUsed>0 && sellingUnlocked) doSellAll();
     });
-    document.getElementById("sellAll").addEventListener("click", ()=>{
-      if(!selling) sellN(backpackUsed);
-    });
-    function sellN(n){
-      if(backpackUsed<=0) return;
+    function doSellAll(){
       selling=true;
-      let cd= sellingTime;
-      let amt= Math.min(backpackUsed,n);
+      let cd=sellingTime;
+      let amt= backpackUsed; // sell everything
       if(sellingInterval) clearInterval(sellingInterval);
       sellingInterval= setInterval(()=>{
         cd-=50;
-        document.getElementById("sellCooldown").innerText= `🕒 Selling Timer: ${formatCooldown(cd)}`;
+        document.getElementById("sellCooldown").innerText=`🕒 Selling Timer: ${formatCooldown(cd)}`;
         if(cd<=0){
           clearInterval(sellingInterval);
-          // get money
-          const f= factories[factoryIndex];
-          const p= f.products[currentProductIndex];
+          // earn
+          let f= factories[factoryIndex];
+          let p= f.products[currentProductIndex];
           let val= p.base* multiplier* prestigeMulti;
-          // we can incorporate the new "Selling Multi" if we wanted to store it separately
-          // but for now, we just do the standard approach
           let totalVal= val* amt;
           money+= totalVal;
           totalEarned+= totalVal;
-          backpackUsed-= amt;
+          backpackUsed=0;
           showNotification(`Sold ${amt} items for $${formatNumber(totalVal)}`);
           selling=false;
-          document.getElementById("sellCooldown").innerText= "🕒 Selling Timer: Ready";
+          document.getElementById("sellCooldown").innerText="🕒 Selling Timer: Ready";
           updateUI();
         }
       },50);
     }
-
-    // auto produce/sell
-    setInterval(()=>{
-      if(autoProduce && !producing && backpackUsed< backpackCapacity){
-        doProduce();
-      }
-      if(autoSell && !selling && backpackUsed>0){
-        sellN(backpackUsed);
-      }
-    },200);
 
     /* ======================
        PRESTIGE
     ======================= */
     const prestigeMenu= document.getElementById("prestigeMenu");
-    document.getElementById("prestige").addEventListener("click", ()=>{
+    document.getElementById("prestige").addEventListener("click",()=>{
       prestigeMenu.style.display="block";
       updatePrestigeMenu();
     });
-    document.getElementById("closePrestige").addEventListener("click", ()=>{
+    document.getElementById("closePrestige").addEventListener("click",()=>{
       prestigeMenu.style.display="none";
     });
     function updatePrestigeMenu(){
-      document.getElementById("livePP").innerText= prestigePoints;
+      document.getElementById("livePP").innerText= formatNumber(prestigePoints);
+      // Potential PP = iteration until we can't buy more
       let pot=0;
       let localEarn= totalEarned;
-      let tmp= nextPPcost;
-      while(localEarn>=tmp){
+      let cost= nextPPcost;
+      while(localEarn>=cost){
         pot++;
-        localEarn-=tmp;
-        tmp*=1.2;
+        localEarn-=cost;
+        cost*=1.2;
+        if(cost<1) cost=1; // just in case, to avoid stuck at 1
       }
-      document.getElementById("earnedPP").innerText= pot;
+      document.getElementById("earnedPP").innerText= formatNumber(pot);
 
-      let f= factories[factoryIndex];
+      const f= factories[factoryIndex];
       document.getElementById("currentFactory").innerText= f.name;
-      let nextF= factories[factoryIndex+1]? factories[factoryIndex+1].name:"None";
+      const nextF= factories[factoryIndex+1]? factories[factoryIndex+1].name: "None";
       document.getElementById("nextFactory").innerText= nextF;
       document.getElementById("baseValue").innerText= formatNumber(f.products[0].base);
       document.getElementById("bestValue").innerText= formatNumber(f.products[f.products.length-1].base);
 
       renderPrestigeUpgrades();
       // check requirement
-      let reqList= [1e3,5e7,5e10,5e13,5e16,5e19,1e22,1e25,1e28,1e31,1e34,1e37,1e40,1e43,1e46,1e49,1e52,1e55,1e58,1e61];
-      let needed= reqList[prestigeCount]||1e99;
+      let reqList=[1e3,5e7,5e10,5e13,5e16,5e19,1e22,1e25,1e28,1e31,1e34,1e37,1e40,1e43,1e46,1e49,1e52,1e55,1e58,1e61];
+      let needed= (reqList[prestigeCount])||1e99;
       const cbtn= document.getElementById("confirmPrestige");
-      if(money< needed){
+      if(money<needed){
         cbtn.disabled=true;
-        cbtn.innerText= `Need $${formatNumber(needed)}`;
+        cbtn.innerText=`Need $${formatNumber(needed)}`;
       } else{
         cbtn.disabled=false;
-        cbtn.innerText= "✔ Confirm";
+        cbtn.innerText="✔ Confirm";
       }
     }
     function renderPrestigeUpgrades(){
       const cont= document.getElementById("prestigeUpgradesMenu");
       cont.innerHTML= "<h3>Permanent Prestige Upgrades</h3>";
-      prestigeUpgrades.forEach((p)=>{
+      prestigeUpgrades.forEach((pu)=>{
         const btn= document.createElement("button");
-        btn.className="button";
-        let maxTxt= (p.max>=999)?"":`/${p.max}`;
-        if(p.purchased>=p.max){
-          btn.innerText= `${p.name} (MAX)`;
+        btn.className="button upgrade";
+        let maxTxt=(pu.max>=999)?"":`/${pu.max}`;
+        if(pu.purchased>=pu.max){
+          btn.innerText= `${pu.name} (MAX)`;
           btn.disabled=true;
-        } else {
-          btn.innerText= `${p.name} ($${formatNumber(p.cost)} PP) [${p.purchased}${maxTxt}]`;
+        } else{
+          let l=`${pu.name} ($${formatNumber(pu.cost)}) [${pu.purchased}${maxTxt}]`;
+          btn.innerText=l;
         }
-        btn.title= p.description;
-        btn.onclick= ()=>{
-          if(prestigePoints>= p.cost && p.purchased< p.max){
-            prestigePoints-= p.cost;
-            p.purchased++;
-            applyPrestigeUpgradeEffect(p);
-            p.cost= Math.round(p.cost*1.6);
+        btn.title=pu.description;
+        btn.onclick=()=>{
+          if(prestigePoints>=pu.cost && pu.purchased<pu.max){
+            prestigePoints-=pu.cost;
+            pu.purchased++;
+            applyPrestigeUpgradeEffect(pu);
+            // cost scale
+            pu.cost= Math.round(pu.cost*1.6);
             updateUI();
           }
         };
         cont.appendChild(btn);
       });
     }
-    function applyPrestigeUpgradeEffect(p){
-      if(p.name.includes("Divine Efficiency")){
-        prestigeMulti*= p.effect;
-      } else if(p.name.includes("Temporal Mastery")){
-        cooldownTime*= p.effect;
-      } else if(p.name.includes("Eternal Workshop")){
-        factories.forEach(fac=>{
-          fac.products.forEach(prod=> prod.base= Math.round(prod.base* p.effect));
+    function applyPrestigeUpgradeEffect(pu){
+      if(pu.name.includes("Divine Efficiency")){
+        prestigeMulti*= pu.effect;
+      } else if(pu.name.includes("Temporal Mastery")){
+        cooldownTime*= pu.effect;
+      } else if(pu.name.includes("Eternal Workshop")){
+        // multiply base product
+        factories.forEach(f=>{
+          f.products.forEach(pr=> pr.base=Math.round(pr.base* pu.effect));
         });
-      } else if(p.name.includes("Auto Tycoon")){
-        if(p.purchased===1){
+      } else if(pu.name.includes("Auto Tycoon")){
+        // stage 1 => ???, stage 2 => ???
+        // no explicit mention of auto-sell
+        if(pu.purchased===1){
           autoProduce=true;
-          showNotification("Stage 1 Unlocked: Auto Produce");
-        } else if(p.purchased===2){
+          showNotification("Stage 1 Unlocked!");
+        } else if(pu.purchased===2){
           autoSell=true;
-          showNotification("Stage 2 Unlocked: Auto Sell");
+          showNotification("Stage 2 Unlocked!");
         }
-      } else if(p.name.includes("Prestige Pure Multi")){
-        prestigeMulti*= p.effect;
-      } else if(p.name.includes("VIP Client Order")){
-        vipChance+= p.effect;
+      } else if(pu.name.includes("Prestige Pure Multi")){
+        prestigeMulti*= pu.effect;
+      } else if(pu.name.includes("VIP Client Order")){
+        vipChance+= pu.effect;
         if(vipChance>0.3) vipChance=0.3;
         vipMultiplier*=1.05;
-      } else if(p.name.includes("Selling Speed Mastery")){
-        sellingTime*= p.effect;
+      } else if(pu.name.includes("Selling Speed Mastery")){
+        sellingTime*= pu.effect; 
       }
     }
 
-    document.getElementById("confirmPrestige").addEventListener("click", ()=>{
-      // check requirement
-      let reqList= [1e3,5e7,5e10,5e13,5e16,5e19,1e22,1e25,1e28,1e31,1e34,1e37,1e40,1e43,1e46,1e49,1e52,1e55,1e58,1e61];
-      let needed= reqList[prestigeCount]||1e99;
-      if(money>= needed){
-        // find PP
+    document.getElementById("confirmPrestige").addEventListener("click",()=>{
+      let reqList=[1e3,5e7,5e10,5e13,5e16,5e19,1e22,1e25,1e28,1e31,1e34,1e37,1e40,1e43,1e46,1e49,1e52,1e55,1e58,1e61];
+      let needed=(reqList[prestigeCount])||1e99;
+      if(money>=needed){
+        // calculate new PP
         let localEarn= totalEarned;
         let c=0;
-        let tmp= nextPPcost;
-        while(localEarn>=tmp){
+        let cost= nextPPcost;
+        while(localEarn>=cost){
           c++;
-          localEarn-=tmp;
-          tmp*=1.2;
+          localEarn-=cost;
+          cost*=1.2;
+          if(cost<1) cost=1;
         }
         prestigePoints+= c;
-        nextPPcost= tmp;
-        prestigeCount++;
+        nextPPcost= cost;
 
-        // reset
+        prestigeCount++;
+        // reset main
         money=0;
         multiplier=1;
         cooldownTime=5000;
@@ -1102,170 +1218,162 @@
         totalProductsProduced=0;
         challengeBonusApplied=false;
         productBatch=1;
-        if(factoryIndex< factories.length-1) factoryIndex++;
+        if(factoryIndex<factories.length-1) factoryIndex++;
 
-        // keep prestigeMulti
-        // reset normal upgrades & employees
-        upgrades= [
-          { name: "Quality Increase", cost: 25, effect: 1.5, description: "Production multiplier +50%.", purchased: 0 },
-          { name: "⚙️ Speedy Assembly", cost: 50, effect: 0.9, description: "Cooldown -10%.", purchased: 0 },
-          { name: "Product Upgrade", cost: 250, effect: "upgradeProduct", description: "Upgrade product tier.", purchased: 0 },
-          { name: "🏭 Factory Expansion", cost: 200, effect: 0.95, description: "Cooldown -5%.", purchased: 0 },
-          { name: "📦 Batch Production", cost: 400, effect: "increaseBatch", description: "Batch size +1.", purchased: 0 },
+        // keep prestigeMulti from upgrades
+        // reset normal upgrades, employees
+        upgrades=[
+          { name:"Quality Increase", cost:25, effect:1.5, description:"Production multiplier +50%.", purchased:0 },
+          { name:"⚙️ Speedy Assembly", cost:50, effect:0.9, description:"Cooldown -10%.", purchased:0 },
+          { name:"Product Upgrade", cost:250, effect:"upgradeProduct", description:"Upgrade product tier.", purchased:0 },
+          { name:"🏭 Factory Expansion", cost:200, effect:0.95, description:"Cooldown -5%.", purchased:0 },
+          { name:"📦 Batch Production", cost:400, effect:"increaseBatch", description:"Batch size +1.", purchased:0 },
         ];
-        employees= [
+        employees=[
           {
-            name: "👷 Worker #1",
-            cost: 75,
-            rate: 1,
-            quantity: 0,
-            description: "Generates $1/sec. ??? ???",
-            purchased: 0
+            name:"👷 Worker #1",
+            cost:75,
+            rate:1,
+            quantity:0,
+            description:"Generates $1/sec + ?",
+            purchased:0
           },
           {
-            name: "👨‍🔧 Worker #2",
-            cost: 250,
-            rate: 5,
-            quantity: 0,
-            description: "Generates $5/sec. ??? ???",
-            purchased: 0
+            name:"👨‍🔧 Worker #2",
+            cost:500,
+            rate:5,
+            quantity:0,
+            description:"Generates $5/sec + ?",
+            purchased:0
           },
           {
-            name: "🛠️ Worker #3",
-            cost: 1000,
-            rate: 20,
-            quantity: 0,
-            description: "Generates $20/sec.",
-            purchased: 0
+            name:"📦 Porter #3",
+            cost:1500,
+            rate:0,
+            quantity:0,
+            description:"Slowly increases backpack capacity? ???",
+            purchased:0
           }
         ];
-        employeeTraining= {
-          unlocked: false,
-          cost: 150,
-          effect: 1.2,
-          purchased: false,
-          description: "All employees +20% production."
+        employeeTraining={
+          unlocked:false,
+          cost:200,
+          effect:1.2,
+          purchased:false,
+          description:"All employees +20% production."
         };
 
         // reset selling
-        if(prestigeCount>0) sellingUnlocked=true;
+        if(prestigeCount>0) sellingUnlocked=true; 
         if(prestigeCount<2) autoSell=false;
         backpackCapacity=10;
         backpackUsed=0;
-        backpackIndex=0;
-        // reset single button backpack data
-        backpackData= [];
-        for(let i=1;i<=30;i++){
-          backpackData.push({
-            name: `Backpack #${i}`,
-            cost: Math.round(100*Math.pow(2.5,i)),
-            effect: 10*i
-          });
-        }
-        backpackData.push({ name: "A Hole", cost:1e8, effect:1000});
-        backpackData.push({ name: "A Bigger Hole", cost:5e9, effect:5000});
-        // sellingUpgrades
-        sellingUpgrades= [
-          { name: "Selling Multi", cost: 1000, effect: 1.5, desc: "Earnings from selling +50%.", purchased: 0 },
-          { name: "Faster Sell", cost: 5000, effect: 0.85, desc: "Selling time -15%.", purchased: 0 },
-          { name: "Bulk Sell", cost: 15000, effect: 2, desc: "Double items sold at once (still WIP).", purchased: 0 }
+        // reset "Sell Multi" logic
+        sellMultiIndex=0;
+        sellMultiCost=1000;
+        // reset sellingUpgrades
+        sellingUpgrades=[
+          {
+            name:"Faster Sell",
+            cost:3000,
+            effect:0.9,
+            desc:"Selling time -10%. cost x2 each purchase",
+            purchased:0
+          }
         ];
 
         showNotification(`Prestige #${prestigeCount}! Gained ${c} new PP.`);
-
-        // If we just unlocked selling => show explanation popup
+        // show selling popup if first time
         if(prestigeCount===1){
           document.getElementById("sellExplain").style.display="block";
         }
         updateUI();
       }
-      prestigeMenu.style.display="none";
+      document.getElementById("prestigeMenu").style.display="none";
     });
 
-    // The new selling explanation
-    document.getElementById("closeSellExplain").addEventListener("click", ()=>{
+    // close selling explanation
+    document.getElementById("closeSellExplain").addEventListener("click",()=>{
       document.getElementById("sellExplain").style.display="none";
     });
 
     /* ======================
        STATS
     ======================= */
-    document.getElementById("statsBtn").addEventListener("click", ()=>{
+    const statsMenu= document.getElementById("statsMenu");
+    document.getElementById("statsBtn").addEventListener("click",()=>{
       renderStats();
-      document.getElementById("statsMenu").style.display="block";
+      statsMenu.style.display="block";
     });
-    document.getElementById("closeStats").addEventListener("click", ()=>{
-      document.getElementById("statsMenu").style.display="none";
+    document.getElementById("closeStats").addEventListener("click",()=>{
+      statsMenu.style.display="none";
     });
     function renderStats(){
       const c= document.getElementById("statsContent");
-      let out= `
-      <p><strong>Total Earned:</strong> $${formatNumber(totalEarned)}</p>
-      <p><strong>Max Money Held:</strong> $${formatNumber(maxMoneyHeld)}</p>
-      <p><strong>Total Products Produced:</strong> ${totalProductsProduced}</p>
-      <p><strong>Cooldown Time:</strong> ${formatCooldown(cooldownTime)}</p>
-      <p><strong>VIP Chance:</strong> ${(vipChance*100).toFixed(2)}%</p>
-      <p><strong>VIP Multiplier:</strong> x${vipMultiplier.toFixed(2)}</p>
-      <p><strong>Factory Index:</strong> ${factoryIndex+1} / ${factories.length}</p>
-      <p><strong>Product Batch Size:</strong> ${productBatch}</p>
-      <p><strong>Multiplier (Normal):</strong> x${formatNumber(multiplier)}</p>
-      <p><strong>Multiplier (Prestige):</strong> x${formatNumber(prestigeMulti)}</p>
-      <p><strong>Prestige Count:</strong> ${prestigeCount}</p>
-      <p><strong>Next PP Cost:</strong> $${formatNumber(nextPPcost)}</p>
+      let s=`
+        <p><strong>Total Earned:</strong> $${formatNumber(totalEarned)}</p>
+        <p><strong>Max Money Held:</strong> $${formatNumber(maxMoneyHeld)}</p>
+        <p><strong>Total Products Produced:</strong> ${totalProductsProduced}</p>
+        <p><strong>Cooldown Time:</strong> ${formatCooldown(cooldownTime)}</p>
+        <p><strong>VIP Chance:</strong> ${(vipChance*100).toFixed(2)}%</p>
+        <p><strong>VIP Multiplier:</strong> x${vipMultiplier.toFixed(2)}</p>
+        <p><strong>Factory Index:</strong> ${factoryIndex+1} / ${factories.length}</p>
+        <p><strong>Product Batch Size:</strong> ${productBatch}</p>
+        <p><strong>Multiplier (Normal):</strong> x${formatNumber(multiplier)}</p>
+        <p><strong>Multiplier (Prestige):</strong> x${formatNumber(prestigeMulti)}</p>
+        <p><strong>Prestige Count:</strong> ${prestigeCount}</p>
+        <p><strong>Next PP Cost:</strong> $${formatNumber(nextPPcost)}</p>
       `;
       if(sellingUnlocked){
-        out+= `<p><strong>Backpack Used/Cap:</strong> ${backpackUsed}/${backpackCapacity}</p>`;
-        out+= `<p><strong>Auto Produce:</strong> ${autoProduce?"Yes":"No"}</p>`;
-        out+= `<p><strong>Auto Sell:</strong> ${autoSell?"Yes":"No"}</p>`;
+        s+= `<p><strong>Backpack Used/Cap:</strong> ${backpackUsed}/${backpackCapacity}</p>`;
+        s+= `<p><strong>Auto Produce:</strong> ${autoProduce?"Yes":"No"}</p>`;
+        s+= `<p><strong>Auto Sell:</strong> ${autoSell?"Yes":"No"}</p>`;
       }
-      c.innerHTML= out;
+      c.innerHTML=s;
     }
 
     /* ======================
        SETTINGS MENU
     ======================= */
     const settingsMenu= document.getElementById("settingsMenu");
-    document.getElementById("settingsBtn").addEventListener("click", ()=>{
+    document.getElementById("settingsBtn").addEventListener("click",()=>{
       settingsMenu.style.display="block";
     });
-    document.getElementById("closeSettings").addEventListener("click", ()=>{
+    document.getElementById("closeSettings").addEventListener("click",()=>{
       settingsMenu.style.display="none";
     });
-
-    let resetTimer= document.getElementById("resetTimer");
-    document.getElementById("resetGame").addEventListener("click", ()=>{
+    const resetTimer= document.getElementById("resetTimer");
+    document.getElementById("resetGame").addEventListener("click",()=>{
       if(!resetInProgress){
-        resetInProgress= true;
-        resetTimer.innerText= "Confirm reset? You have 10s to undo after confirming.";
-        // show confirm & undo
-        const confirmBtn= document.createElement("button");
+        resetInProgress=true;
+        resetTimer.innerText="Press Confirm to reset. After confirming, you get 10s to undo or it cancels if time runs out.";
+        // create confirm & undo
+        let confirmBtn= document.createElement("button");
         confirmBtn.className="button";
         confirmBtn.innerText="Confirm Reset";
-        const undoBtn= document.createElement("button");
+        let undoBtn= document.createElement("button");
         undoBtn.className="button";
         undoBtn.innerText="Undo";
         settingsMenu.appendChild(confirmBtn);
         settingsMenu.appendChild(undoBtn);
 
         confirmBtn.onclick= ()=>{
-          // once confirmed => 10s countdown
-          resetTimer.innerText= "Reset in 10s. Refreshing won't save progress now.";
+          // 10s countdown
+          resetTimer.innerText="Reset in 10s. Press Undo to cancel. No saving in this window.";
           let cd=10;
           let interval= setInterval(()=>{
             cd--;
-            resetTimer.innerText= `Reset in ${cd}s. Press Undo to cancel.`;
+            resetTimer.innerText=`Reset in ${cd}s. Press Undo to cancel.`;
             if(cd<=0){
               clearInterval(interval);
               localStorage.clear();
               location.reload();
             }
           },1000);
-
-          // remove confirmBtn so they can't double confirm
           confirmBtn.remove();
         };
         undoBtn.onclick= ()=>{
-          resetInProgress= false;
+          resetInProgress=false;
           resetTimer.innerText="";
           confirmBtn.remove();
           undoBtn.remove();
@@ -1276,16 +1384,29 @@
     });
 
     /* ======================
+       PASSIVE INCOME
+    ======================= */
+    setInterval(()=>{
+      let eProd= employees.reduce((sum,e)=> sum+(e.rate* e.quantity),0);
+      if(eProd>0){
+        let inc= eProd* multiplier* prestigeMulti;
+        money+=inc;
+        totalEarned+=inc;
+        updateUI();
+      }
+    },1000);
+
+    /* ======================
        INIT
     ======================= */
     function init(){
-      // if we have >0 prestige => sellingUnlocked= true
-      if(prestigeCount>0) sellingUnlocked= true;
+      // if prestige >0 => sellingUnlocked= true
+      if(prestigeCount>0) sellingUnlocked=true;
       updateUI();
     }
     window.onload= init;
 
-    // auto save
+    // auto update
     setInterval(()=> updateUI(),10000);
   </script>
 </body>
